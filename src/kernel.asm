@@ -42,11 +42,16 @@ start:
     
 
     ; Habilitar A20
-    
+    call habilitar_A20 
+
     ; Cargar la GDT
+    cli
+    LGDT [GDT_DESC]
 
     ; Setear el bit PE del registro CR0
-    
+    MOV eax,cr0
+    OR eax,1
+        
     ; Saltar a modo protegido
 
     ; Establecer selectores de segmentos
