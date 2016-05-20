@@ -4,6 +4,8 @@
 ; ==============================================================================
 
 %include "imprimir.mac"
+extern GDT_DESC
+
 
 global start
 
@@ -51,9 +53,15 @@ start:
     ; Setear el bit PE del registro CR0
     MOV eax,cr0
     OR eax,1
+    MOV cr0, eax
         
     ; Saltar a modo protegido
+    xchg bx, bx
+    JMP 0x20:mProtegido  ;0X20 es VERDURITA     
 
+mProtegido:
+    mov ax, 0x20   ;datos primera tabla lvl 0
+    mov ds, ax
     ; Establecer selectores de segmentos
 
     ; Establecer la base de la pila

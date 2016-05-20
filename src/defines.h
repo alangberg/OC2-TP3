@@ -26,13 +26,17 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 5
+#define GDT_COUNT 8
 
-#define GDT_IDX_NULL_DESC           0
-#define GDT_IDX_CODE1_DESC          4
-#define GDT_IDX_DATA1_DESC          5
-#define GDT_IDX_CODE2_DESC          6
-#define GDT_IDX_DATA2_DESC          7
+#define GDT_IDX_NULL_DESC            0
+#define GDT_IDX_NULL_DESC1           1
+#define GDT_IDX_NULL_DESC2           2
+#define GDT_IDX_NULL_DESC3           3
+
+#define GDT_IDX_CODE_0      	   	 4
+#define GDT_IDX_DATA_0  	   	     5
+#define GDT_IDX_CODE_3	 	         6
+#define GDT_IDX_DATA_3	             7
 
 
 /* Offsets en la gdt */
