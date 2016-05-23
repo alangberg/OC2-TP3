@@ -130,6 +130,22 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
+
+    [GDT_IDX_VIDEO_3] = (gdt_entry) {
+        (unsigned short)    0xffff,         /* limit[0:15]  */  //CONSULTAR (0x36DFF) 
+        (unsigned short)    0x8000,         /* base[0:15]   */  
+        (unsigned char)     0x0b,           /* base[23:16]  */
+        (unsigned char)     0x02,           /* type         */ //CAPAZ ES 3 VERDURITA
+        (unsigned char)     0x01,           /* s            */
+        (unsigned char)     0x03,           /* dpl          */  //Listo
+        (unsigned char)     0x01,           /* p            */
+        (unsigned char)     0x0b,           /* limit[16:19] */
+        (unsigned char)     0x00,           /* avl          */
+        (unsigned char)     0x00,           /* l            */
+        (unsigned char)     0x01,           /* db           */
+        (unsigned char)     0x00,           /* g            */
+        (unsigned char)     0x00,           /* base[31:24]  */
+    },
     
 };
 

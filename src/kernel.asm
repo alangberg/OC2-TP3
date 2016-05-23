@@ -57,16 +57,28 @@ start:
         
     ; Saltar a modo protegido
     xchg bx, bx
-    JMP 0x20:mProtegido  ;0X20 es VERDURITA     
+    JMP 0x20:mProtegido  ;codigo primera tabla lvl 0 0X20 es VERDURITA     
 
 mProtegido:
-    mov ax, 0x20   ;datos primera tabla lvl 0
-    mov ds, ax
-    ; Establecer selectores de segmentos
+
+    ;Establecer selectores de segmentos
+    xor ax, ax
+    mov ax, 0x28   ;datos primera tabla lvl 0
+    mov ds, ax ;VERDURITA
+    mov es, ax ;VERDURITA
+    mov gs, ax ;VERDURITA
+    mov ss, ax ;VERDURITA
+    mov fs, ax ;VERDURITA
+
 
     ; Establecer la base de la pila
+    mov esp, 0x27000 ;VERDURITA
+    mov ebp, esp
+
     
     ; Imprimir mensaje de bienvenida
+    imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0 ;Que es cada campo?
+
 
     ; Inicializar pantalla
     
