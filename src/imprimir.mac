@@ -125,7 +125,7 @@
     pop ax              ; eax = color
 
     ; Acomodar color en la parte alta de ax
-    shl ax, 8           ; ah = color
+    shl ax, 8           ; ax ? ah = color
 
     ; Imprimir cadena
     %%ciclo_cadena:
@@ -137,7 +137,7 @@
 
     pop es
 
-    popa
+    popa ;popa
 %endmacro
 
 %endif  ;; !__IMPRIMIR_MAC__ ;;

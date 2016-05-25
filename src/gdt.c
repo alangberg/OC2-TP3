@@ -10,7 +10,7 @@
 gdt_entry gdt[GDT_COUNT] = {
     /* Descriptor nulo*/
     /* Offset = 0x00 */
-    [GDT_IDX_NULL_DESC] = (gdt_entry) { //TABLA NULL(la primera)
+    [GDT_IDX_NULL_KERNEL] = (gdt_entry) { //TABLA NULL(la primera)
         (unsigned short)    0x0000,         /* limit[0:15]  */ 
         (unsigned short)    0x0000,         /* base[0:15]   */
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -70,7 +70,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
-        [GDT_IDX_CODE_0] = (gdt_entry) {
+        [GDT_0_CODE_KERNEL] = (gdt_entry) {
         (unsigned short)    0x6DFF,         /* limit[0:15]  */  //CONSULTAR (0x36DFF) 
         (unsigned short)    0x0000,         /* base[0:15]   */  
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -85,7 +85,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
-        [GDT_IDX_DATA_0] = (gdt_entry) {
+        [GDT_0_DATA_KERNEL] = (gdt_entry) {
         (unsigned short)    0x6DFF,         /* limit[0:15]  */  //CONSULTAR (0x36DFF) 
         (unsigned short)    0x0000,         /* base[0:15]   */  
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -100,7 +100,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
-        [GDT_IDX_CODE_3] = (gdt_entry) {
+        [GDT_1_CODE_USER] = (gdt_entry) {
         (unsigned short)    0x6DFF,         /* limit[0:15]  */  //CONSULTAR (0x36DFF) 
         (unsigned short)    0x0000,         /* base[0:15]   */  
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -115,7 +115,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
-        [GDT_IDX_DATA_3] = (gdt_entry) {
+        [GDT_1_DATA_USER] = (gdt_entry) {
         (unsigned short)    0x6DFF,         /* limit[0:15]  */  //CONSULTAR (0x36DFF) 
         (unsigned short)    0x0000,         /* base[0:15]   */  
         (unsigned char)     0x00,           /* base[23:16]  */
@@ -131,13 +131,13 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* base[31:24]  */
     },
 
-    [GDT_IDX_VIDEO_3] = (gdt_entry) {
+    [GDT_2_VIDEO_USER] = (gdt_entry) {
         (unsigned short)    0xffff,         /* limit[0:15]  */  //Verdurita
         (unsigned short)    0x8000,         /* base[0:15]   */  
         (unsigned char)     0x0b,           /* base[23:16]  */
         (unsigned char)     0x03,           /* type         */ //CAPAZ ES OTRO VERDURITA (ACCESED?)
-        (unsigned char)     0x001,           /* s            */
-        (unsigned char)     0x03,           /* dpl          */  //Que privilegio tiene el video
+        (unsigned char)     0x001,          /* s            */
+        (unsigned char)     0x00,           /* dpl          */  //Que privilegio tiene el video
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x0b,           /* limit[16:19] */
         (unsigned char)     0x00,           /* avl          */
@@ -146,7 +146,6 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
- 
 };
 
 gdt_descriptor GDT_DESC = {

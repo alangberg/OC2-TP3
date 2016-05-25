@@ -18,7 +18,7 @@
 
 /* Misc */
 /* -------------------------------------------------------------------------- */
-#define CANT_H                 15
+#define CANT_H                 	15
 #define CANT                    5
 #define SIZE_W                  80
 #define SIZE_H                  44
@@ -28,16 +28,16 @@
 /* -------------------------------------------------------------------------- */
 #define GDT_COUNT 9
 
-#define GDT_IDX_NULL_DESC            0
+#define GDT_IDX_NULL_KERNEL          0
 #define GDT_IDX_NULL_DESC1           1
 #define GDT_IDX_NULL_DESC2           2
 #define GDT_IDX_NULL_DESC3           3
 
-#define GDT_IDX_CODE_0      	   	 4
-#define GDT_IDX_DATA_0  	   	     5
-#define GDT_IDX_CODE_3	 	         6
-#define GDT_IDX_DATA_3	             7
-#define GDT_IDX_VIDEO_3	             8
+#define GDT_0_CODE_KERNEL      	   	 4
+#define GDT_0_DATA_KERNEL  	   	     5
+#define GDT_1_CODE_USER	 	         6
+#define GDT_1_DATA_USER	             7
+#define GDT_2_VIDEO_USER	         8
 
 
 

@@ -65,10 +65,12 @@ mProtegido:
     xor ax, ax
     mov ax, 0x28   ;datos primera tabla lvl 0
     mov ds, ax ;VERDURITA
+    mov ss, ax ;VERDURITA
     mov es, ax ;VERDURITA
     mov gs, ax ;VERDURITA
-    mov ss, ax ;VERDURITA
-    mov fs, ax ;VERDURITA
+    xor ax, ax
+    mov ax, 0x40
+    mov fs, ax ;VERDURITA Pongo la entrada de Video
 
 
     ; Establecer la base de la pila
@@ -79,20 +81,16 @@ mProtegido:
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
-    ; Inicializar pantalla
-     %define VIDEO_MEM 0xB8000
-     
-     xor ecx, ecx
-     mov ecx, 0xfa0 ;7640 Elementos
-     xor esi, esi
-     mov esi, VIDEO_MEM
-     .ciclo:
-     ;xchg bx, bx
-     mov word [esi], 5
-     ;mov word [VIDEO_MEM+2], 0x7
-     ;dec cx
-     ;loop .ciclo
-     
+    ; Inicializar pantalla  ;ALTA VERDURA
+    
+    xor ecx, ecx
+    mov ecx, 0xdc0
+    xor esi, esi
+	.ciclo:
+    	mov word [fs:esi], 0xF700
+        add esi, 2
+    loop .ciclo
+
     ; Inicializar el manejador de memoria
  
     ; Inicializar el directorio de paginas

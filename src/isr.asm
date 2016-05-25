@@ -17,6 +17,12 @@ extern fin_intr_pic1
 ;; Sched
 extern sched_proximo_indice
 
+;;Mensajes
+
+error_msg_1 db     'OH NO! Dividiste por cero!'
+error_msg_1_len equ    $ - iniciando_mp_msg
+imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -26,9 +32,12 @@ global _isr%1
 
 _isr%1:
     mov eax, %1
+    imprimir_texto_mp error_msg_%1, iniciando_mp_len, 0x07, 0, 0
     jmp $
 
+
 %endmacro
+
 
 ;;
 ;; Datos
@@ -41,6 +50,24 @@ isrClock:            db '|/-\'
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
 ISR 0
+error_msg_1 db     'OH NO! Dividiste por cero!'
+error_msg_1_len equ    $ - iniciando_mp_msg
+imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0
+
+ISR 1
+iniciando_mp_msg db     'OH NO! Esta Reservado para INTEL!'
+iniciando_mp_len equ    $ - iniciando_mp_msg
+imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0
+
+ISR 2
+iniciando_mp_msg db     'OH NO! NMASK'
+iniciando_mp_len equ    $ - iniciando_mp_msg
+imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0
+
+ISR 3
+iniciando_mp_msg db     'OH NO! Breakpoint'
+iniciando_mp_len equ    $ - iniciando_mp_msg
+imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 0, 0
 
 ;;
 ;; Rutina de atención del RELOJ
