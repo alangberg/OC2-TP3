@@ -7,7 +7,9 @@
 extern GDT_DESC
 extern IDT_DESC
 extern idt_inicializar
-extern limpiarBuffer
+extern imprimirJuego
+extern systemClock
+
 global start
 
 
@@ -94,8 +96,19 @@ mProtegido:
  ;        add esi, 2
  ;    loop .ciclo
 
-    call limpiarBuffer
-    	xchg bx, bx
+    mov edi, 10
+    mov esi, 10
+
+    push edi
+    push esi
+
+    .gameLoop:
+        call imprimirJuego
+        add systemClock, 1
+    jmp .gameLoop
+
+    xchg bx, bx
+    add esp, 2*4
 
     ; Inicializar el manejador de memoria
  

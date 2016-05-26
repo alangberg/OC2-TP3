@@ -89,7 +89,7 @@ global _isr%1
 
 _isr%1:
     mov eax, %1
-    imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x07, 0, 0
+    imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
     jmp $
     
 %endmacro

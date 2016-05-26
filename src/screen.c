@@ -51,18 +51,17 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
-void limpiarBuffer() {
-    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+// attr = (backcolour << 4) | (forecolour & 0x0F)
+
+
+void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2) {
     int x;
-    for (x = 0; x < 80; x++) { // se podria poner en una linea sola llamando a print
-        p[0][x].c = (unsigned char) 0;
-        p[0][x].a = (unsigned char) 0;
-    }
+    for (x = 0; x < 160; x++) print(" ", x, 0, 0);
 
     int y = 1;
     x = 0;
     while (y < 45) { // se podria poner en una linea sola llamando a print    
-        print(" ", y, x, 256);
+        print(" ", x, y, (7 << 4) | (0 & 0x0F));
         
         x++;
         if (x == VIDEO_COLS) {
@@ -70,8 +69,67 @@ void limpiarBuffer() {
             y++;
         }
     }
+
+    while (y < 50) {
+        if (x > 47 && x < 55) {
+            print(" ", x, y, (4 << 4) | (0 & 0x0F)); // aca pinto todo de rojo para el P1
+        } else if (x > 54 && x < 62) {
+            print(" ", x, y, (1 << 4) | (0 & 0x0F)); // aca pinto todo de azul para el P2
+        } else {
+            print(" ", x, y, 0); // si no va todo en negro
+        }
+
+        x++;
+        if (x == VIDEO_COLS) {
+            x = 0;
+            y++;
+        }
+    }
+
+    print("vidas", 41, 46, (0 << 4) | (15 & 0x0F));
+    print("vidas", 64, 46, (0 << 4) | (15 & 0x0F));
+
+    print_int(vidaP1, 43, 48, (0 << 4) | (15 & 0x0F));
+    print_int(vidaP2, 66, 48, (0 << 4) | (15 & 0x0F));
+
+    print_int(ptosP1, 51, 47, (4 << 4) | (15 & 0x0F));
+    print_int(ptosP2, 58, 47, (1 << 4) | (15 & 0x0F));
+
+    print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
+    print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
+
+    if (systemClock == 8) systemClock = 0;
+    unsigned char temp = systemClock;
+    clockChar(systemClock);
+    print(systemClock, 79, 49, (0 << 4) | (15 & 0x0F)))
+    systemClock = temp;
 }
 
-
-
-
+void clockChar(unsigned char* clockCh) {
+    switch(clockCh) {
+        case 0
+            *clockCh = '|';
+            break;
+        case 1
+            *clockCh = '/';
+            break;
+        case 2
+            *clockCh = '-';
+            break;
+        case 3
+            *clockCh = 92;
+            break;
+        case 4
+            *clockCh = '|';
+            break;
+        case 5
+            *clockCh = '/';
+            break;
+        case 6
+            *clockCh = '-'
+            break;
+        case 7
+            *clockCh = 92:
+            break;
+    }
+}

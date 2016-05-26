@@ -20,12 +20,14 @@ typedef struct ca_s {
     unsigned char a;
 } ca;
 
+extern unsigned char systemClock;
+
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
 
 void print_hex(unsigned int numero, int size, unsigned int x, unsigned int y, unsigned short attr);
 
 void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short attr);
 
-void limpiarBuffer();
+void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2);
 
 #endif  /* !__SCREEN_H__ */
