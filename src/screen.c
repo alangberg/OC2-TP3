@@ -51,6 +51,26 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
+void limpiarBuffer() {
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    int x;
+    for (x = 0; x < 80; x++) { // se podria poner en una linea sola llamando a print
+        p[0][x].c = (unsigned char) 0;
+        p[0][x].a = (unsigned char) 0;
+    }
+
+    int y = 1;
+    x = 0;
+    while (y < 45) { // se podria poner en una linea sola llamando a print    
+        print(" ", y, x, 256);
+        
+        x++;
+        if (x == VIDEO_COLS) {
+            x = 0;
+            y++;
+        }
+    }
+}
 
 
 

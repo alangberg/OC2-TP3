@@ -5,8 +5,9 @@
 
 %include "imprimir.mac"
 extern GDT_DESC
-
-
+extern IDT_DESC
+extern idt_inicializar
+extern limpiarBuffer
 global start
 
 
@@ -83,13 +84,18 @@ mProtegido:
 
     ; Inicializar pantalla  ;ALTA VERDURA
     
-    xor ecx, ecx
-    mov ecx, 0xdc0
-    xor esi, esi
-	.ciclo:
-    	mov word [fs:esi], 0xF700
-        add esi, 2
-    loop .ciclo
+ ;    xor ecx, ecx
+ ;    mov ecx, 0xdc0
+ ;    sub ecx, 160
+ ;    xor esi, esi
+ ;    add esi, 160
+	; .ciclo:
+ ;    	mov word [fs:esi], 0xF700
+ ;        add esi, 2
+ ;    loop .ciclo
+
+    call limpiarBuffer
+    	xchg bx, bx
 
     ; Inicializar el manejador de memoria
  
@@ -106,10 +112,18 @@ mProtegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
+
+    call idt_inicializar
     
     ; Cargar IDT
- 
+ 	
+    LIDT [IDT_DESC]
+    	xchg bx, bx
+
+    int 0x02
+
     ; Configurar controlador de interrupciones
+
 
     ; Cargar tarea inicial
 

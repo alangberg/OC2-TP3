@@ -8,8 +8,8 @@
 #include "defines.h"
 #include "idt.h"
 #include "isr.h"
-
 #include "tss.h"
+
 
 idt_entry idt[255] = { 
 
@@ -38,58 +38,33 @@ idt_descriptor IDT_DESC = {
 
 #define IDT_ENTRY(numero)                                                                                        \
     idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
-    idt[numero].segsel = (unsigned short) 0x00;                                                                  \
-    idt[numero].attr = (unsigned short) 0x0000;                                                                  \
+    idt[numero].segsel = (unsigned short) 0x20; /*MODIFICAR*/                                                                 \
+    idt[numero].attr = (unsigned short) 0x0470 << 5; /*MODIFICAR P 1|DPL 00|01110|000   */                                                    \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 
 
+// Excepciones
 void idt_inicializar() {
-	IDT_ENTRY(0)
-    // Excepciones
+	IDT_ENTRY(0);
+	IDT_ENTRY(1);
+	IDT_ENTRY(2);
+	IDT_ENTRY(3);
+	IDT_ENTRY(4);
+	IDT_ENTRY(5);
+	IDT_ENTRY(6);
+	IDT_ENTRY(7);
+	IDT_ENTRY(8);
+	IDT_ENTRY(9);
+	IDT_ENTRY(10);
+	IDT_ENTRY(11);
+	IDT_ENTRY(12);
+	IDT_ENTRY(13);
+	IDT_ENTRY(14);
+	IDT_ENTRY(15);
+	IDT_ENTRY(16);
+	IDT_ENTRY(17);
+	IDT_ENTRY(18);
+	IDT_ENTRY(19);
 }
 
-char* msjInt(unsigned char* i) {
-	switch(*i) {
-		case 0
-			return "ERROR! No sabes que no podes divir por cero?";
-		case 1
-			return "ERROR! RESERVED";
-		case 2
-			return "ERROR! NMI Interrupt";
-		case 3
-			return "ERROR! Breakpoint";
-		case 4
-			return "ERROR! Overflow";
-		case 5
-			return "ERROR! BOUND Range Exceeded";
-		case 6
-			return "ERROR! Invalid Opcode (Undefined Opcode)";
-		case 7
-			return "ERROR! Double Fault";
-		case 8
-			return "ERROR! Coprocessor Segment Overrun (reserved)";
-		case 9
-			return "ERROR! Invalid TSS";
-		case 10
-			return "ERROR! Segment Not Present";
-		case 11
-			return "ERROR! Stack-Segment Fault";
-		case 12
-			return "ERROR! General Protection";
-		case 13
-			return "ERROR! Page Fault";
-		case 14
-			return "ERROR! (Intel reserved. Do not use.)";
-		case 15
-			return "ERROR! BOUND Range Exceeded";
-		case 16
-			return "ERROR! Invalid Opcode (Undefined Opcode)";
-		case 17
-			return "ERROR! Double Fault";
-		case 18
-			return "ERROR! Coprocessor Segment Overrun (reserved)";
-		case 19
-			return "ERROR! Invalid TSS";
-	}
-}
