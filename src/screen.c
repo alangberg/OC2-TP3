@@ -98,38 +98,10 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
     print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
     print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
 
-    if (systemClock == 8) systemClock = 0;
+/*    if (systemClock == 8) systemClock = 0;
     unsigned char temp = systemClock;
     clockChar(systemClock);
     print(systemClock, 79, 49, (0 << 4) | (15 & 0x0F)))
-    systemClock = temp;
+    systemClock = temp;*/
 }
 
-void clockChar(unsigned char* clockCh) {
-    switch(clockCh) {
-        case 0
-            *clockCh = '|';
-            break;
-        case 1
-            *clockCh = '/';
-            break;
-        case 2
-            *clockCh = '-';
-            break;
-        case 3
-            *clockCh = 92;
-            break;
-        case 4
-            *clockCh = '|';
-            break;
-        case 5
-            *clockCh = '/';
-            break;
-        case 6
-            *clockCh = '-'
-            break;
-        case 7
-            *clockCh = 92:
-            break;
-    }
-}

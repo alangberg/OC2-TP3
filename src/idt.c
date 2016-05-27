@@ -36,10 +36,10 @@ idt_descriptor IDT_DESC = {
 */
 
 
-#define IDT_ENTRY(numero)                                                                                        \
-    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
-    idt[numero].segsel = (unsigned short) 0x20; /*MODIFICAR*/                                                                 \
-    idt[numero].attr = (unsigned short) 0x0470 << 5; /*MODIFICAR P 1|DPL 00|01110|000   */                                                    \
+#define IDT_ENTRY(numero)                                                                                         \
+    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);         \
+    idt[numero].segsel = (unsigned short) 0x20; /*MODIFICAR*/                                                     \
+    idt[numero].attr = (unsigned short) 0x0470 << 5; /*MODIFICAR P 1|DPL 00|01110|000   */                        \
     idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
 
 

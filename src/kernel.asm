@@ -9,6 +9,9 @@ extern IDT_DESC
 extern idt_inicializar
 extern imprimirJuego
 extern systemClock
+extern mmu_inicializar_dir_kernel
+%define PAGE_DIRECTORY_KERNEL   0x27000
+%define PAGE_TABLE_KERNEL		0x28000
 
 global start
 
@@ -104,20 +107,24 @@ mProtegido:
 
     .gameLoop:
         call imprimirJuego
-        add systemClock, 1
-    jmp .gameLoop
+        ; add systemClock, 1
+    ; jmp .gameLoop
 
-    xchg bx, bx
     add esp, 2*4
 
     ; Inicializar el manejador de memoria
- 
+ 	 
     ; Inicializar el directorio de paginas
-    
+    call mmu_inicializar_dir_kernel
     ; Cargar directorio de paginas
+	mov eax, PAGE_DIRECTORY_KERNEL
+	mov cr3, eax
 
     ; Habilitar paginacion
-    
+ 	mov eax, cr0
+	or eax, 0x80000000
+	mov cr0, eax ;Verdurita
+
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
@@ -131,7 +138,7 @@ mProtegido:
     ; Cargar IDT
  	
     LIDT [IDT_DESC]
-    	xchg bx, bx
+    xchg bx, bx
 
     int 0x02
 

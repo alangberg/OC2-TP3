@@ -22,6 +22,10 @@
 #define CANT                    5
 #define SIZE_W                  80
 #define SIZE_H                  44
+#define PAGE_DIRECTORY_KERNEL   0x27000
+#define PAGE_TABLE_KERNEL		0x28000
+#define PAGE_SIZE				0x1000
+#define INICIO_PAGINAS_LIBRES	0x100000
 
 
 /* Indices en la gdt */
