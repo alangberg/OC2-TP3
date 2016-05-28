@@ -7,6 +7,15 @@
 
 #include "mmu.h"
 
+//Macros
+#define PDE_INDEX(virtual) virtual >> 22
+#define PTE_INDEX(virtual) (virtual >> 12) & 0x3FF
+#define ALIGN(dir)
+#define PG_READ_WRITE
+#define PG_USER
+#define PG_PRESENT 0x00000001
+
+
 void mmu_inicializar_dir_kernel(){
 	int* page_directory = (int*) PAGE_DIRECTORY_KERNEL;
 	page_directory[0] = PAGE_TABLE_KERNEL + 0x3;
@@ -37,4 +46,13 @@ unsigned int mmu_proxima_pagina_fisica_libre() {
 
 
 
+/*Mapea la pagina fisica a la marco de pagina virtual en el esquema
+de paginacion cr3.*/
+void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica){
+	
+	
 
+
+}
+/*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
+void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3){}
