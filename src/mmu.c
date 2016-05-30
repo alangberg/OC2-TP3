@@ -68,7 +68,13 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 }
 
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
-void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3){}
+void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
+	int* page_directory = (int*) (cr3 & 0xFFFFF000);
+	page_directory = (int*)((*page_directory) + (PDE_INDEX(virtual))*4);
+
+	// aca no se si poner 0xFFFFFFFE para no perder todo el resto de los datos pero creo q si PRESENT esta en 0 ya no importan.
+	*page_directory &= 0x00000000;
+}
 
 /*
 
