@@ -49,10 +49,14 @@ unsigned int mmu_proxima_pagina_fisica_libre() {
 /*Mapea la pagina fisica a la marco de pagina virtual en el esquema
 de paginacion cr3.*/
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica){
-	
-	
+	int* page_directory = (int*) cr3; 
+	page_directory = (int* )((*page_directory) + (PDE_INDEX(virtual))*4);
+	if (((*page_directory) & PG_PRESENT) == 0x1){
+		int* page_table = (int*) (*page_directory);
+		page_table = () PTE_INDEX(page_table);
 
-
+	}
 }
+
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
 void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3){}
