@@ -46,92 +46,40 @@ unsigned int mmu_proxima_pagina_fisica_libre() {
 de paginacion cr3.*/
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica){
 	// Agarro los 1ros 20bits de la CR3 que corresponden a la direccion base del directorio de paginas
-	int* page_directory = (int*) (cr3 & 0xFFFFF000);
+	int* PDE = (int*) (cr3 & 0xFFFFF000);
 
-	page_directory = (int*)((*page_directory) + (PDE_INDEX(virtual))*4);
+	PDE = (int*)((*PDE) + (PDE_INDEX(virtual))*4);
 
 	// si PRESENT es 0
-	if (!((*page_directory) & PG_PRESENT)) {
+	if (!((*PDE) & PG_PRESENT)) {
 		// pongo la dir en 0
-		*page_directory &= 0x00000FFF;
-		// la igualo con el resultado de la funcion (me da un numero de 32bits lo corro 12 lugares)
-		*page_directory |= mmu_proxima_pagina_fisica_libre() << 12;
-		// le pongo en 1 el PRESENT
-		*page_directory |= PG_PRESENT;
+		*PDE &= 0x00000FFF;
+		// la igualo con el resultado de la funcion (me da un numero de 32bits donde los primeros 12 son 0s asi que esta todo re piolanga)
+		*PDE |= mmu_proxima_pagina_fisica_libre();
+		// le pongo en 1 el PRESENT y el RW como dice la diapo
+		*PDE |= (PG_PRESENT | PG_READ_WRITE);
+
+		// dejo el resto de la tabla en 0
+		int i;
+		int* it = PDE + 0x8000;
+		for (i = 1; i < 1024; i++) {
+			*it = 0x00000000;
+			it = it + 0x8000;
+		}
 	}
 
-	int* table_directory = (int*) (*page_directory & 0xFFFFF000) + (PTE_INDEX(virtual)*4);
+	int* PTE = (int*) (*PDE & 0xFFFFF000) + (PTE_INDEX(virtual)*4);
 
-	*table_directory &= 0x00000FFF;
-	*table_directory |= fisica << 12;
-	*table_directory |= PG_PRESENT;
+	*PTE &= 0x00000FFF;
+	*PTE |= fisica;
+	*PTE |= (PG_PRESENT | PG_READ_WRITE);
 }
 
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
 void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
-	int* page_directory = (int*) (cr3 & 0xFFFFF000);
-	page_directory = (int*)((*page_directory) + (PDE_INDEX(virtual))*4);
+	int* PDE = (int*) (cr3 & 0xFFFFF000);
+	PDE = (int*)((*PDE) + (PDE_INDEX(virtual))*4);
 
 	// aca no se si poner 0xFFFFFFFE para no perder todo el resto de los datos pero creo q si PRESENT esta en 0 ya no importan.
-	*page_directory &= 0x00000000;
+	*PDE &= 0x00000000;
 }
-
-/*
-
-#include "mmu.h"
-#define PDE_INDEX(virtu) virtu >> 22
-#define PTE_INDEX(virtu) (virtu << 10) >> 22
-//#define ALIGN(dir)         
-#define PG_READ_WRITE	0x00000002
-#define PG_USER			0x00000004
-#define PG_PRESENT		0x00000001
-
-#define PAGE_SIZE		0x00001000
-
-page_entries_set* PDE = (page_entries_set*) PAGE_DIRECTORY_BASE;
-page_entries_set* PTE = (page_entries_set*) PAGE_TABLE_BASE;
-unsigned int proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
-
-void mmu_inicializar() {
-	unsigned int i = 0;
-	unsigned int wr_p = PG_READ_WRITE | PG_PRESENT;
-	while (i < 1024){ 
-		PDE->page_entries[i].attr = 0;
-		PTE->page_entries[i].attr = wr_p;
-		PTE->page_entries[i].base_page_addr = i;
-		i++;
-	}
-
-	PDE->page_entries[0].attr = wr_p;
-	PDE->page_entries[0].base_page_addr = PAGE_TABLE_BASE >> 12;
-}
-
-unsigned int mmu_proxima_pagina_fisica_libre() {
-	unsigned int pagina_libre = proxima_pagina_libre;
-	proxima_pagina_libre += PAGE_SIZE;
-	
-	return pagina_libre;
-}
-
-void mmu_mapear_pagina(unsigned int virtu, unsigned int cr3, unsigned int fisica){
-	page_entries_set* pd = (page_entries_set*) (cr3 & 0xFFFFF000);
-
-	unsigned int pd_ind = PDE_INDEX(virtu);
-	//LO MAS DECLARATIVO QUE EXISTE
-	if(!(pd->page_entries[pd_ind].attr & PG_PRESENT)){
-		pd->page_entries[pd_ind].attr |= PG_PRESENT;
-		pd->page_entries[pd_ind].base_page_addr = mmu_proxima_pagina_fisica_libre() >> 12;
-	}
-
-	page_entries_set* pt = (page_entries_set*) (pd->page_entries[pd_ind].base_page_addr << 12);
-	unsigned int pt_ind = PTE_INDEX(virtu);
-	pt->page_entries[pt_ind].attr |= PG_PRESENT;
-	pt->page_entries[pt_ind].base_page_addr = fisica >> 12;
-}
-
-void mmu_inicializar_dir_tarea(){
-
-}
-
-*/
-
