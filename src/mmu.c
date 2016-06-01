@@ -44,42 +44,64 @@ unsigned int mmu_proxima_pagina_fisica_libre() {
 
 /*Mapea la pagina fisica a la marco de pagina virtual en el esquema
 de paginacion cr3.*/
-void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica){
+void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica) {
 	// Agarro los 1ros 20bits de la CR3 que corresponden a la direccion base del directorio de paginas
-	int* PDE = (int*) (cr3 & 0xFFFFF000);
+	pde_entry* CR3 = (pde_entry*)(cr3 & 0xFFFFF000);
 
-	PDE = (int*)((*PDE) + (PDE_INDEX(virtual))*4);
+	pde_entry* PDE = &(CR3[PDE_INDEX(virtual)]);
+
 
 	// si PRESENT es 0
-	if (!((*PDE) & PG_PRESENT)) {
+	if (!(PDE->present)) {
 		// pongo la dir en 0
-		*PDE &= 0x00000FFF;
+		PDE->base = mmu_proxima_pagina_fisica_libre();
 		// la igualo con el resultado de la funcion (me da un numero de 32bits donde los primeros 12 son 0s asi que esta todo re piolanga)
-		*PDE |= mmu_proxima_pagina_fisica_libre();
 		// le pongo en 1 el PRESENT y el RW como dice la diapo
-		*PDE |= (PG_PRESENT | PG_READ_WRITE);
+		PDE->present = 1;
+		PDE->rw = 1;
 
 		// dejo el resto de la tabla en 0
 		int i;
-		int* it = PDE + 0x8000;
+		pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
 		for (i = 1; i < 1024; i++) {
-			*it = 0x00000000;
-			it = it + 0x8000;
+			pte_indice[i].present = 0;
 		}
 	}
 
-	int* PTE = (int*) (*PDE & 0xFFFFF000) + (PTE_INDEX(virtual)*4);
+	pte_entry* a = (pte_entry*) ((PDE->base)<<12);
 
-	*PTE &= 0x00000FFF;
-	*PTE |= fisica;
-	*PTE |= (PG_PRESENT | PG_READ_WRITE);
+	pte_entry* PTE = (pte_entry*) &(a[PTE_INDEX(virtual)]);
+
+	PTE->base = fisica;
+	PTE->present = 1;
+	PTE->rw = 1;
 }
 
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
-void mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
-	int* PDE = (int*) (cr3 & 0xFFFFF000);
-	PDE = (int*)((*PDE) + (PDE_INDEX(virtual))*4);
+unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
+	pde_entry* CR3 = (pde_entry*) (cr3 & 0xFFFFF000);
+	pde_entry* PDE = &(CR3[PDE_INDEX(virtual)]);
+
+	pte_entry* a = (pte_entry*) ((PDE->base)<<12);
+
+	pte_entry* PTE = (pte_entry*) &(a[PTE_INDEX(virtual)]);
+	pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
+
+	PTE->present = 0;
+
+	int check_noHayNadie = 1;
+	int i;
+	for (i = 0; i < 1024 && check_noHayNadie; i++){
+		if(pte_indice[i].present){
+			check_noHayNadie = 0;
+		} 
+	}
+
+	if (check_noHayNadie){
+		PDE->present = 0;
+	}
 
 	// aca no se si poner 0xFFFFFFFE para no perder todo el resto de los datos pero creo q si PRESENT esta en 0 ya no importan.
-	*PDE &= 0x00000000;
+	
+	return cr3;
 }

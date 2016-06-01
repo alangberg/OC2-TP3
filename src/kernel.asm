@@ -10,6 +10,8 @@ extern idt_inicializar
 extern imprimirJuego
 extern systemClock
 extern mmu_inicializar_dir_kernel
+extern mmu_mapear_pagina
+extern mmu_unmapear_pagina
 %define PAGE_DIRECTORY_KERNEL   0x27000
 %define PAGE_TABLE_KERNEL		0x28000
 
@@ -125,6 +127,24 @@ mProtegido:
 	or eax, 0x80000000
 	mov cr0, eax ;Verdurita
 
+    mov edi, 0x00400000
+    mov esi, cr3
+    mov edx, 0x00400000
+    push edx
+    push esi
+    push edi
+    call mmu_mapear_pagina
+    xchg bx, bx    
+
+    add esp, 3*4
+
+    mov edi, 0x00400000
+    mov esi, cr3
+    push esi
+    push edi
+    call mmu_unmapear_pagina
+
+    xchg bx, bx    
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
