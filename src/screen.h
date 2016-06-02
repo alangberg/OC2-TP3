@@ -30,4 +30,6 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2);
 
+void imprimirTeclado(char codigo);
+
 #endif  /* !__SCREEN_H__ */

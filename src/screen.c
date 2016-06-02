@@ -7,6 +7,44 @@
 
 #include "screen.h"
 
+void imprimirTeclado(char codigo) {
+    switch (codigo) {
+        case 0x11:
+            print("W", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x2a:
+            print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x1e:
+            print("A", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x1f:
+            print("S", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x20:
+            print("D", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x17:
+            print("I", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x24:
+            print("J", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x25:
+            print("K", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x26:
+            print("L", 79, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        case 0x36:
+            print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
+            break;
+        default:
+            print("      ", 74, 0, (0 << 4));
+            break;
+    }
+}
+
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr) {
     ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
     int i;
@@ -97,11 +135,5 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
     print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
     print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
-
-/*    if (systemClock == 8) systemClock = 0;
-    unsigned char temp = systemClock;
-    clockChar(systemClock);
-    print(systemClock, 79, 49, (0 << 4) | (15 & 0x0F)))
-    systemClock = temp;*/
 }
 

@@ -29,5 +29,4 @@ extern idt_descriptor IDT_DESC;
 
 void idt_inicializar();
 
-
 #endif  /* !__IDT_H__ */

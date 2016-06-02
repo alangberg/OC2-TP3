@@ -11,6 +11,8 @@ BITS 32
 sched_tarea_offset:     dd 0x00
 sched_tarea_selector:   dw 0x00
 
+extern imprimirTeclado
+
 ;; PIC
 extern fin_intr_pic1
 
@@ -101,6 +103,7 @@ _isr%1:
 ; Scheduler
 isrnumero:           dd 0x00000000
 isrClock:            db '|/-\'
+W:                   db 'W'
 
 ;;
 ;; Rutina de atención de las EXCEPCIONES
@@ -130,9 +133,30 @@ ISR 19
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
 
+global _isr32
+
+_isr32:
+    pushad
+    call fin_intr_pic1
+    call proximo_reloj
+    popad
+iret
+
 ;;
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+
+global _isr33
+
+_isr33:
+    pushad
+    call fin_intr_pic1
+    in al, 0x60
+    push eax
+    call imprimirTeclado
+    pop eax
+    popad
+iret
 
 ;;
 ;; Rutinas de atención de las SYSCALLS

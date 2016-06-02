@@ -12,6 +12,9 @@ extern systemClock
 extern mmu_inicializar_dir_kernel
 extern mmu_mapear_pagina
 extern mmu_unmapear_pagina
+extern resetear_pic
+extern habilitar_pic
+
 %define PAGE_DIRECTORY_KERNEL   0x27000
 %define PAGE_TABLE_KERNEL		0x28000
 
@@ -134,7 +137,7 @@ mProtegido:
     push esi
     push edi
     call mmu_mapear_pagina
-    xchg bx, bx    
+;    xchg bx, bx    
 
     add esp, 3*4
 
@@ -144,7 +147,7 @@ mProtegido:
     push edi
     call mmu_unmapear_pagina
 
-    xchg bx, bx    
+    ;xchg bx, bx    
     ; Inicializar tss
 
     ; Inicializar tss de la tarea Idle
@@ -158,16 +161,18 @@ mProtegido:
     ; Cargar IDT
  	
     LIDT [IDT_DESC]
-    xchg bx, bx
-
-    int 0x02
+    ;xchg bx, bx
 
     ; Configurar controlador de interrupciones
 
+    call resetear_pic
+    call habilitar_pic
 
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
+
+    sti
 
     ; Saltar a la primera tarea: Idle
 
