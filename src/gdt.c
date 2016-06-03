@@ -146,6 +146,14 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
+
+    [GDT_TSS_INICIAL] = (gdt_entry) { // 9
+    },
+
+    [GDT_TSS_IDLE] = (gdt_entry) { // 10
+    },
+
+
 };
 
 gdt_descriptor GDT_DESC = {
