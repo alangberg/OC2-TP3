@@ -22,4 +22,13 @@ void game_donde(unsigned int* pos);
 void game_mover_cursor(int jugador, direccion dir);
 
 
+typedef struct str_pos
+{
+	unsigned char x;
+	unsigned char y;
+} pos;
+
+extern pos p1_pos;
+extern pos p2_pos;
+
 #endif  /* !__GAME_H__ */

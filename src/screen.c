@@ -11,30 +11,38 @@ void imprimirTeclado(char codigo) {
     switch (codigo) {
         case 0x11:
             print("W", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(1, 0xA33);
+            break;
+        case 0x1e:
+            print("A", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(1, 0xAAA);
+            break;
+        case 0x1f:
+            print("S", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(1, 0x883);
+            break;
+        case 0x20:
+            print("D", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(1, 0x441);
             break;
         case 0x2a:
             print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
             break;
-        case 0x1e:
-            print("A", 79, 0, (0 << 4) | (15 & 0x0F));
-            break;
-        case 0x1f:
-            print("S", 79, 0, (0 << 4) | (15 & 0x0F));
-            break;
-        case 0x20:
-            print("D", 79, 0, (0 << 4) | (15 & 0x0F));
-            break;
         case 0x17:
             print("I", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(2, 0xA33);
             break;
         case 0x24:
             print("J", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(2, 0xAAA);
             break;
         case 0x25:
             print("K", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(2, 0x883);
             break;
         case 0x26:
             print("L", 79, 0, (0 << 4) | (15 & 0x0F));
+            game_mover_cursor(2, 0x441);
             break;
         case 0x36:
             print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
@@ -135,5 +143,14 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
     print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
     print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
+
+
+    p1_pos.x = 20;
+    p1_pos.y = 20;
+    p2_pos.x = 50;
+    p2_pos.y = 20;
+
+    print("*", p1_pos.x, p1_pos.y, (4 << 4) | (15 & 0x0F));
+    print("*", p2_pos.x, p2_pos.y, (1 << 4) | (15 & 0x0F));
 }
 
