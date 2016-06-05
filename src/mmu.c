@@ -50,7 +50,6 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 
 	pde_entry* PDE = &(CR3[PDE_INDEX(virtual)]);
 
-
 	// si PRESENT es 0
 	if (!(PDE->present)) {
 		// pongo la dir en 0
@@ -100,7 +99,6 @@ unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	if (check_noHayNadie){
 		PDE->present = 0;
 	}
-
 	// aca no se si poner 0xFFFFFFFE para no perder todo el resto de los datos pero creo q si PRESENT esta en 0 ya no importan.
 	
 	return cr3;
