@@ -42,6 +42,9 @@
 #define GDT_1_CODE_USER	 	         6
 #define GDT_1_DATA_USER	             7
 #define GDT_2_VIDEO_USER	         8
+#define GDT_TSS_INICIAL	        	 9
+#define GDT_TSS_IDLE	        	 10
+
 
 
 

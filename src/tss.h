@@ -16,8 +16,8 @@
 typedef struct str_tss {
     unsigned short  ptl;
     unsigned short  unused0;
-    unsigned int    esp0; //Prox pagina fisica libre
-    unsigned short  ss0; //SS que use en la gdt
+    unsigned int    esp0;       //Prox pagina fisica libre
+    unsigned short  ss0;        //SS que use en la gdt
     unsigned short  unused1;
     unsigned int    esp1;
     unsigned short  ss1;
