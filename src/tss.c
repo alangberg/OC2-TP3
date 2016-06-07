@@ -7,6 +7,7 @@
 
 #include "tss.h"
 #include "gdt.h"
+#include "mmu.h"
 
 tss tss_inicial;
 tss tss_idle;
@@ -17,12 +18,47 @@ void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMEND
     tss_idle.eip = 0x0;      //¿?.
     /*La pila se alojará en la misma dirección que la pila del kernel y será mapeada con identity mapping.
     Esta tarea ocupa 1 pagina de 4KB.*/
-    unsigned int pila = mmu_proxima_pagina_fisica_libre();
+    tss_idle.esp0 = mmu_proxima_pagina_fisica_libre();	
     tss_idle.esp = pila;    
     tss_idle.ebp = tss_idle.esp;
     tss_idle.eflags = 0x202; //diapo pagina 24
+    tss_idle.es = 
+    tss_idle.cs =
+    tss_idle.ss =
+    tss_idle.fs =
+    tss_idle.gs =
 }
 	
+gdt[9] = {
+        (unsigned short)    sizeof(tss)-1,         			/* limit[0:15]  */ 
+        (unsigned short)    &tss_inicial, 					/*aca hay q ponerle (bien) &tss_inicial*/,         /* base[0:15]   */
+        (unsigned char)     &tss_inicial >> 16,           	/* base[23:16]  */
+        (unsigned char)     0x00,           				/* type         */
+        (unsigned char)     0x00,           				/* s            */
+        (unsigned char)     0x00,           				/* dpl          */  //listo
+        (unsigned char)     0x01,           				/* p            */
+        (unsigned char)     (sizeof(tss)-1) >> 16,           /* limit[16:19] */
+        (unsigned char)     0x00,           				/* avl          */
+        (unsigned char)     0x00,           				/* l            */
+        (unsigned char)     0x00,           				/* db           */
+        (unsigned char)     0x00,           				/* g            */
+        (unsigned char)     &tss_inicial >> 24,           	/* base[31:24]  */
+	} // tss inicial
+gdt[10] = {
+        (unsigned short)    sizeof(tss)-1,         			/* limit[0:15]  */ 
+        (unsigned short)    &tss_idle, 						/*aca hay q ponerle (bien) &tss_inicial*/,         /* base[0:15]   */
+        (unsigned char)     &tss_idle >> 16,         		/* base[23:16]  */
+        (unsigned char)     0x00,           				/* type         */
+        (unsigned char)     0x00,           				/* s            */
+        (unsigned char)     0x00,           				/* dpl          */  //listo
+        (unsigned char)     0x01,           				/* p            */
+        (unsigned char)     (sizeof(tss)-1) >> 16,          /* limit[16:19] */
+        (unsigned char)     0x00,           				/* avl          */
+        (unsigned char)     0x00,           				/* l            */
+        (unsigned char)     0x00,           				/* db           */
+        (unsigned char)     0x00,           				/* g            */
+        (unsigned char)     &tss_idle >> 24,                /* base[31:24]  */
+	} // tss idle
 
 // typedef struct str_tss {
 //     unsigned short  ptl;
@@ -73,18 +109,3 @@ void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMEND
 
 
 
-	// gdt[9] = {
- //        (unsigned short)    0x0000,         /* limit[0:15]  */ 
- //        (unsigned short)    &tss_inicial >> 4, /*aca hay q ponerle (bien) &tss_inicial*/,         /* base[0:15]   */
- //        (unsigned char)     &tss_inicial >> 2 & 0xFFFFFF00,           /* base[23:16]  */
- //        (unsigned char)     0x00,           /* type         */
- //        (unsigned char)     0x00,           /* s            */
- //        (unsigned char)     0x00,           /* dpl          */  //listo
- //        (unsigned char)     0x00,           /* p            */
- //        (unsigned char)     0x00,           /* limit[16:19] */
- //        (unsigned char)     0x00,           /* avl          */
- //        (unsigned char)     0x00,           /* l            */
- //        (unsigned char)     0x00,           /* db           */
- //        (unsigned char)     0x01,           /* g            */
- //        (unsigned char)     &tss_inicial & 0xFF,           /* base[31:24]  */
-	// } // tss inicial

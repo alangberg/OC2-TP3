@@ -152,39 +152,9 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* db           */
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
-    },
-
-    // [GDT_TSS_INICIAL] = (gdt_entry) { // 9
-    //     (unsigned short)    0x0000,         /* limit[0:15]  */
-    //     (unsigned short)    0x0000,         /* base[0:15]   */
-    //     (unsigned char)     0x00,           /* base[23:16]  */
-    //     (unsigned char)     0x00,           /* type         */
-    //     (unsigned char)     0x00,           /* s            */
-    //     (unsigned char)     0x00,           /* dpl          */  
-    //     (unsigned char)     0x01,           /* p            */
-    //     (unsigned char)     0x00,           /* limit[16:19] */
-    //     (unsigned char)     0x00,           /* avl          */
-    //     (unsigned char)     0x00,           /* l            */
-    //     (unsigned char)     0x00,           /* db           */
-    //     (unsigned char)     0x00,           /* g            */
-    //     (unsigned char)     0x00,           /* base[31:24]  */
-    // },
-
-    // [GDT_TSS_IDLE] = (gdt_entry) { // 10
-    //     (unsigned short)    0x0000,         /* limit[0:15]  */
-    //     (unsigned short)    0x0000,         /* base[0:15]   */
-    //     (unsigned char)     0x00,           /* base[23:16]  */
-    //     (unsigned char)     0x00,           /* type         */
-    //     (unsigned char)     0x00,           /* s            */
-    //     (unsigned char)     0x00,           /* dpl          */  
-    //     (unsigned char)     0x01,           /* p            */
-    //     (unsigned char)     0x00,           /* limit[16:19] */
-    //     (unsigned char)     0x00,           /* avl          */
-    //     (unsigned char)     0x00,           /* l            */
-    //     (unsigned char)     0x00,           /* db           */
-    //     (unsigned char)     0x00,           /* g            */
-    //     (unsigned char)     0x00,           /* base[31:24]  */
-    // }
+    }
+    // 8.[GDT_TSS_INICIAL]
+    // 9.[GDT_TSS_IDLE]
 
 };
 

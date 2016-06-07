@@ -42,7 +42,7 @@ typedef struct str_tss {
     unsigned short  unused5;
     unsigned short  ss;
     unsigned short  unused6;
-    unsigned short  ds;
+    unsigned short  ds;			//level 3 datos.
     unsigned short  unused7;
     unsigned short  fs;
     unsigned short  unused8;
