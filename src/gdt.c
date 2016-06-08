@@ -105,7 +105,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
-    //DESCRIPTOR DE CODIGO 1
+    //DESCRIPTOR DE CODIGO 1 (6)
         [GDT_1_CODE_USER] = (gdt_entry) {
         (unsigned short)    0x6DFF,         /* limit[0:15]  */  //CONSULTAR (0x36DFF) 
         (unsigned short)    0x0000,         /* base[0:15]   */  
@@ -121,7 +121,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     },
-    //DESCRIPTOR DE DATOS 1
+    //DESCRIPTOR DE DATOS 1 (7)
         [GDT_1_DATA_USER] = (gdt_entry) {
         (unsigned short)    0x6DFF,         /* limit[0:15]  */ //CONSULTAR (0x36DFF) 
         (unsigned short)    0x0000,         /* base[0:15]   */  
@@ -162,6 +162,3 @@ gdt_descriptor GDT_DESC = {
     sizeof(gdt) - 1,
     (unsigned int) &gdt
 };
-
-
-

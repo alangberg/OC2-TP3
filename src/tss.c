@@ -11,29 +11,66 @@
 
 tss tss_inicial;
 tss tss_idle;
-
+gdt_entry gdt[GDT_COUNT];
 
 void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMENDA ESTO.
-    tss_idle.cr3 = 0x2700;
-    tss_idle.eip = 0x0;      //¿?.
+   // typedef struct str_tss {
+//     unsigned short  ptl;
+//     unsigned short  unused0;
+       tss_idle.esp0 = mmu_proxima_pagina_fisica_libre();       //Prox pagina fisica libre
+       tss_idle.ss0 = 0x28;        //SS que use en la gdt
+//     unsigned short  unused1;
+//     unsigned int    esp1;
+       tss_idle.ss1 = 0x38;
+//     unsigned short  unused2;
+//     unsigned int    esp2;
+//     unsigned short  ss2;
+//     unsigned short  unused3;
+       tss_idle.cr3 = 0x27000;
+       tss_idle.eip = 0x10000; //QUE INSTR POINTER USO?
+       tss_idle.eflags = 0x202; //diapo pagina 24
+//     unsigned int    eax;   /LOS DEJO
+//     unsigned int    ecx;	  |A TODOS
+//     unsigned int    edx;	  |COMO
+//     unsigned int    ebx;	  \ESTAN
+       tss_idle.esp = 0x27000;
+       tss_idle.ebp = tss_idle.esp;
+//     unsigned int    esi;  ID
+//     unsigned int    edi;  EM
+       tss_idle.es = 0x28;
+//     unsigned short  unused4;
+       tss_idle.cs = 0x20;
+//     unsigned short  unused5;
+       tss_idle.ss = 0x28;
+//     unsigned short  unused6;
+       tss_idle.ds = 0x28;
+//     unsigned short  unused7;
+       tss_idle.fs = 0x28;
+//     unsigned short  unused8;
+       tss_idle.gs = 0x28;
+//     unsigned short  unused9;
+//     unsigned short  ldt;
+//     unsigned short  unused10;
+//     unsigned short  dtrap; 0
+       tss_idle.iomap = 0xFFFF
+}
+
+
+
+    t
     /*La pila se alojará en la misma dirección que la pila del kernel y será mapeada con identity mapping.
     Esta tarea ocupa 1 pagina de 4KB.*/
     tss_idle.esp0 = mmu_proxima_pagina_fisica_libre();	
-    tss_idle.esp = pila;    
+    // tss_idle.esp = pila;    
     tss_idle.ebp = tss_idle.esp;
-    tss_idle.eflags = 0x202; //diapo pagina 24
-    tss_idle.es = 
-    tss_idle.cs =
-    tss_idle.ss =
-    tss_idle.fs =
-    tss_idle.gs =
-}
+    tss_idle.eflags = ; 
+
 	
-gdt[9] = {
+	gdt[9] = (gdt_entry) {
         (unsigned short)    sizeof(tss)-1,         			/* limit[0:15]  */ 
-        (unsigned short)    &tss_inicial, 					/*aca hay q ponerle (bien) &tss_inicial*/,         /* base[0:15]   */
-        (unsigned char)     &tss_inicial >> 16,           	/* base[23:16]  */
-        (unsigned char)     0x00,           				/* type         */
+        (unsigned short)    (unsigned int) &tss_inicial, 					/*aca hay q ponerle (bien) &tss_inicial*/         /* base[0:15]   */
+        (unsigned char)     (unsigned int) &tss_inicial >> 16,           	/* base[23:16]  */
+        (unsigned char)     0x09,           				/* type         */
         (unsigned char)     0x00,           				/* s            */
         (unsigned char)     0x00,           				/* dpl          */  //listo
         (unsigned char)     0x01,           				/* p            */
@@ -42,13 +79,13 @@ gdt[9] = {
         (unsigned char)     0x00,           				/* l            */
         (unsigned char)     0x00,           				/* db           */
         (unsigned char)     0x00,           				/* g            */
-        (unsigned char)     &tss_inicial >> 24,           	/* base[31:24]  */
-	} // tss inicial
-gdt[10] = {
+        (unsigned char)     (unsigned int) &tss_inicial >> 24,           	/* base[31:24]  */
+	}; // tss inicial
+	gdt[10] = (gdt_entry) {
         (unsigned short)    sizeof(tss)-1,         			/* limit[0:15]  */ 
-        (unsigned short)    &tss_idle, 						/*aca hay q ponerle (bien) &tss_inicial*/,         /* base[0:15]   */
-        (unsigned char)     &tss_idle >> 16,         		/* base[23:16]  */
-        (unsigned char)     0x00,           				/* type         */
+        (unsigned short)    (unsigned int) &tss_idle, 						/*aca hay q ponerle (bien) &tss_inicial*/         /* base[0:15]   */
+        (unsigned char)     (unsigned int) &tss_idle >> 16,         		/* base[23:16]  */
+        (unsigned char)     0x09,           				/* type         */
         (unsigned char)     0x00,           				/* s            */
         (unsigned char)     0x00,           				/* dpl          */  //listo
         (unsigned char)     0x01,           				/* p            */
@@ -57,49 +94,10 @@ gdt[10] = {
         (unsigned char)     0x00,           				/* l            */
         (unsigned char)     0x00,           				/* db           */
         (unsigned char)     0x00,           				/* g            */
-        (unsigned char)     &tss_idle >> 24,                /* base[31:24]  */
-	} // tss idle
+        (unsigned char)     (unsigned int) &tss_idle >> 24,                /* base[31:24]  */
+	}; // tss idleL
+}
 
-// typedef struct str_tss {
-//     unsigned short  ptl;
-//     unsigned short  unused0;
-//     unsigned int    esp0;       //Prox pagina fisica libre
-//     unsigned short  ss0;        //SS que use en la gdt
-//     unsigned short  unused1;
-//     unsigned int    esp1;
-//     unsigned short  ss1;
-//     unsigned short  unused2;
-//     unsigned int    esp2;
-//     unsigned short  ss2;
-//     unsigned short  unused3;
-//     unsigned int    cr3;        //LISTO
-//     unsigned int    eip;
-//     unsigned int    eflags;
-//     unsigned int    eax;
-//     unsigned int    ecx;
-//     unsigned int    edx;
-//     unsigned int    ebx;
-//     unsigned int    esp;
-//     unsigned int    ebp;
-//     unsigned int    esi;
-//     unsigned int    edi;
-//     unsigned short  es;
-//     unsigned short  unused4;
-//     unsigned short  cs;
-//     unsigned short  unused5;
-//     unsigned short  ss;
-//     unsigned short  unused6;
-//     unsigned short  ds;
-//     unsigned short  unused7;
-//     unsigned short  fs;
-//     unsigned short  unused8;
-//     unsigned short  gs;
-//     unsigned short  unused9;
-//     unsigned short  ldt;
-//     unsigned short  unused10;
-//     unsigned short  dtrap;
-//     unsigned short  iomap;
-// } __attribute__((__packed__, aligned (8))) tss;
 
 
 

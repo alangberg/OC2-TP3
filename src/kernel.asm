@@ -65,7 +65,7 @@ start:
     MOV eax,cr0
     OR eax,1
     MOV cr0, eax
-        
+            
     ; Saltar a modo protegido
     ;xchg bx, bx
     JMP 0x20:mProtegido  ;codigo primera tabla lvl 0 0X20 es VERDURITA     
