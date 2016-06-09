@@ -13,6 +13,10 @@ tss tss_inicial;
 tss tss_idle;
 gdt_entry gdt[GDT_COUNT];
 
+void tss_inicializar(){
+
+}
+
 void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMENDA ESTO.
    // typedef struct str_tss {
 //     unsigned short  ptl;
@@ -21,7 +25,7 @@ void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMEND
        tss_idle.ss0 = 0x28;        //SS que use en la gdt
 //     unsigned short  unused1;
 //     unsigned int    esp1;
-       tss_idle.ss1 = 0x38;
+ //      tss_idle.ss1 = 0x38;
 //     unsigned short  unused2;
 //     unsigned int    esp2;
 //     unsigned short  ss2;
@@ -52,18 +56,8 @@ void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMEND
 //     unsigned short  ldt;
 //     unsigned short  unused10;
 //     unsigned short  dtrap; 0
-       tss_idle.iomap = 0xFFFF
-}
+       tss_idle.iomap = 0xFFFF;
 
-
-
-    t
-    /*La pila se alojará en la misma dirección que la pila del kernel y será mapeada con identity mapping.
-    Esta tarea ocupa 1 pagina de 4KB.*/
-    tss_idle.esp0 = mmu_proxima_pagina_fisica_libre();	
-    // tss_idle.esp = pila;    
-    tss_idle.ebp = tss_idle.esp;
-    tss_idle.eflags = ; 
 
 	
 	gdt[9] = (gdt_entry) {
@@ -96,14 +90,5 @@ void tss_inicializar_idle() { //CONSULTAR TODAS LAS LINEAS, ES UNA FRUTA TREMEND
         (unsigned char)     0x00,           				/* g            */
         (unsigned char)     (unsigned int) &tss_idle >> 24,                /* base[31:24]  */
 	}; // tss idleL
+
 }
-
-
-
-
-
-
-
-
-
-

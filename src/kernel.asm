@@ -14,6 +14,7 @@ extern mmu_mapear_pagina
 extern mmu_unmapear_pagina
 extern resetear_pic
 extern habilitar_pic
+extern tss_inicializar_idle
 
 %define PAGE_DIRECTORY_KERNEL   0x27000
 %define PAGE_TABLE_KERNEL		0x28000
@@ -149,8 +150,11 @@ mProtegido:
 
     ;xchg bx, bx    
     ; Inicializar tss
+    ; hay que inicializar las tareas A-H
 
     ; Inicializar tss de la tarea Idle
+
+    call tss_inicializar_idle
 
     ; Inicializar el scheduler
 
@@ -161,7 +165,6 @@ mProtegido:
     ; Cargar IDT
  	
     LIDT [IDT_DESC]
-    ;xchg bx, bx
 
     ; Configurar controlador de interrupciones
 
@@ -170,11 +173,15 @@ mProtegido:
 
     ; Cargar tarea inicial
 
-    ; Habilitar interrupciones
+    mov ax, 0x48  ;NUEVE
+    ltr ax
 
+    ; Habilitar interrupciones
     sti
 
     ; Saltar a la primera tarea: Idle
+
+    jmp 0x50:0
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
