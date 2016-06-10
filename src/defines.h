@@ -26,11 +26,11 @@
 #define PAGE_TABLE_KERNEL		0x28000
 #define PAGE_SIZE				0x1000
 #define INICIO_PAGINAS_LIBRES	0x100000
-
+#define DIR_VIRTUAL_TAREA		0x8000000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 100 //REVISAR AL FINAL 
+#define GDT_COUNT 50 //REVISAR AL FINAL 
 
 #define GDT_IDX_NULL_KERNEL          0
 #define GDT_IDX_NULL_DESC1           1
@@ -44,6 +44,13 @@
 #define GDT_2_VIDEO_USER	         8
 #define GDT_TSS_INICIAL	        	 9
 #define GDT_TSS_IDLE	        	 10
+
+#define GDT_POSICION_CODE_KERNEL	0x20
+#define GDT_POSICION_DATA_KERNEL	0x28
+#define GDT_POSICION_CODE_USER		0x30
+#define GDT_POSICION_DATA_USER		0x38
+#define GDT_POSICION_TSS_INICIAL	0x48
+#define GDT_POSICION_TSS_IDLE		0x50
 
 
 

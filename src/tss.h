@@ -13,6 +13,12 @@
 #include "gdt.h"
 #include "sched.h"
 
+
+
+void tss_inicializar_idle();
+unsigned int tarea_gdt_libre();
+void tss_nueva_tarea(unsigned int* code, posicion pos);
+
 typedef struct str_tss {
     unsigned short  ptl;
     unsigned short  unused0;
@@ -54,6 +60,5 @@ typedef struct str_tss {
     unsigned short  iomap;
 } __attribute__((__packed__, aligned (8))) tss;
 
-void tss_inicializar_idle();
 
 #endif  /* !__TSS_H__ */

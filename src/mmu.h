@@ -13,7 +13,6 @@
 #include "tss.h"
 #include "game.h"
 
-
 typedef struct str_pde_entry {
     unsigned char   present:1;
     unsigned char   rw:1;
@@ -49,7 +48,8 @@ void mmu_inicializar_dir_kernel();
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica);
 unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3);
 unsigned int mmu_proxima_pagina_fisica_libre();
-
+unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos);
+unsigned int game_dame_fisica_de_posicion(posicion pos);
 
 
 #endif	/* !__MMU_H__ */

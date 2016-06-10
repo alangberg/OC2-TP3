@@ -132,25 +132,29 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
         }
     }
 
+    jR.pos.x = 20;
+    jR.pos.y = 20;
+    
+    jR.vida = 15;
+
+    jA.pos.x = 50;
+    jA.pos.y = 20;
+
+    jA.vida = 15;
+
     print("vidas", 41, 46, (0 << 4) | (15 & 0x0F));
     print("vidas", 64, 46, (0 << 4) | (15 & 0x0F));
 
-    print_int(vidaP1, 43, 48, (0 << 4) | (15 & 0x0F));
-    print_int(vidaP2, 66, 48, (0 << 4) | (15 & 0x0F));
+    print_int(jR.vida, 43, 48, (0 << 4) | (15 & 0x0F));
+    print_int(jA.vida, 66, 48, (0 << 4) | (15 & 0x0F));
 
-    print_int(ptosP1, 51, 47, (4 << 4) | (15 & 0x0F));
-    print_int(ptosP2, 58, 47, (1 << 4) | (15 & 0x0F));
+    print_int(jR.puntos, 51, 47, (4 << 4) | (15 & 0x0F));
+    print_int(jA.puntos, 58, 47, (1 << 4) | (15 & 0x0F));
 
     print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
     print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
 
-
-    p1_pos.x = 20;
-    p1_pos.y = 20;
-    p2_pos.x = 50;
-    p2_pos.y = 20;
-
-    print("*", p1_pos.x, p1_pos.y, (4 << 4) | (15 & 0x0F));
-    print("*", p2_pos.x, p2_pos.y, (1 << 4) | (15 & 0x0F));
+    print("*", jR.pos.x, jR.pos.y, (4 << 4) | (15 & 0x0F));
+    print("*", jA.pos.x, jA.pos.y, (1 << 4) | (15 & 0x0F));
 }
 

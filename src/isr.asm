@@ -158,6 +158,7 @@ _isr33:
     popad
 iret
 
+
 ;;
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
@@ -169,6 +170,16 @@ iret
 %define VIRUS_ROJO 0x841
 %define VIRUS_AZUL 0x325
 
+global _isr102
+
+_isr102:
+    pushad
+    call fin_intr_pic1
+    
+    mov eax, 0x42
+    mov [ebp-24], eax
+    popad
+iret
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;

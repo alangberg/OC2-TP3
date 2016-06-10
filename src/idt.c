@@ -1,4 +1,4 @@
-/* ** por compatibilidad se omiten tildes **
+	/* ** por compatibilidad se omiten tildes **
 ================================================================================
  TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 ================================================================================
@@ -68,4 +68,5 @@ void idt_inicializar() {
 	IDT_ENTRY(19);
 	IDT_ENTRY(32);
 	IDT_ENTRY(33);
+	IDT_ENTRY(102);
 }

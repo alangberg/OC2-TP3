@@ -150,6 +150,7 @@ mProtegido:
 
     ;xchg bx, bx    
     ; Inicializar tss
+
     ; hay que inicializar las tareas A-H
 
     ; Inicializar tss de la tarea Idle
@@ -170,10 +171,11 @@ mProtegido:
 
     call resetear_pic
     call habilitar_pic
+    
 
     ; Cargar tarea inicial
 
-    mov ax, 0x48  ;NUEVE
+    mov ax, 0x48  ;
     ltr ax
 
     ; Habilitar interrupciones
@@ -182,6 +184,9 @@ mProtegido:
     ; Saltar a la primera tarea: Idle
 
     jmp 0x50:0
+
+    mov eax, 0x11000
+
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

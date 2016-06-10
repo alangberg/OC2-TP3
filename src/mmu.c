@@ -30,20 +30,40 @@ void mmu_inicializar_dir_kernel(){
 }
 
 
-void mmu_inicializar_dir_tarea(){ //completar
-	int* page_directory = (int*) PAGE_DIRECTORY_KERNEL;
-	page_directory[0] = PAGE_TABLE_KERNEL + 0x3;
+
+unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos){
+
+	int* page_directory_tareas = (int*) mmu_proxima_pagina_fisica_libre();
+	page_directory_tareas[0] = (int) (page_directory_tareas + 0x3);
 	int i;
 	for (i = 1; i < 1024; ++i) {
-		page_directory[i]= 0x0;
+		page_directory_tareas[i]= 0x0;
 	}
 
-	int* page_table = (int*) PAGE_TABLE_KERNEL;
+	int* page_table_tareas = (int*) mmu_proxima_pagina_fisica_libre();
 	for (i = 0; i < 1024; ++i) {
-		page_table[i] = ((i << 12) | 3);
+		page_table_tareas[i] = ((i << 12) | 3);
 	}
+
+	unsigned int* fisica = (unsigned int*) game_dame_fisica_de_posicion(pos);
+
+	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica);
+
+	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica);
+	int j;
+	for (j = 0; j < 1024; ++j)
+	{
+		fisica[i] = codigo[i];
+	}
+	
+	mmu_unmapear_pagina((unsigned int) fisica, rcr3());
+
+	return (unsigned int)page_directory_tareas;
 }
 
+unsigned int game_dame_fisica_de_posicion(posicion pos) {
+	return (0x400000 + (pos.y*80 + pos.x)*0x8000);
+}
 
 unsigned int proxima_pagina_libre;
 void mmu_inicializar() {
@@ -89,6 +109,7 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 	PTE->base = fisica;
 	PTE->present = 1;
 	PTE->rw = 1;
+	tlbflush();
 }
 
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
@@ -114,7 +135,7 @@ unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	if (check_noHayNadie){
 		PDE->present = 0;
 	}
-	// aca no se si poner 0xFFFFFFFE para no perder todo el resto de los datos pero creo q si PRESENT esta en 0 ya no importan.
-	
+
+	tlbflush();
 	return cr3;
 }

@@ -8,57 +8,57 @@
 
 #define POS_IGUALES(a, b) a.x == b.x && a.y == b.y
 
-pos p1_pos;
-pos p2_pos;
+jugador jR;
+jugador jA;
 
 void game_mover_cursor(int jugador, direccion dir) {
 	if (jugador == 1)
 	{
-		if (POS_IGUALES(p1_pos, p2_pos)) print("*", p1_pos.x, p1_pos.y, (1 << 4) | (15 & 0x0F));
-		else print(" ", p1_pos.x, p1_pos.y, (7 << 4));
+		if (POS_IGUALES(jR.pos, jA.pos)) print("*", jR.pos.x, jR.pos.y, (1 << 4) | (15 & 0x0F));
+		else print(" ", jR.pos.x, jR.pos.y, (7 << 4));
 
 		switch (dir) {
 			case ARB:
-				if (p1_pos.y > 1) p1_pos.y -= 1;
-				else p1_pos.y = 44;
+				if (jR.pos.y > 1) jR.pos.y -= 1;
+				else jR.pos.y = 44;
 				break;
 			case ABA:
-				if (p1_pos.y < 44) p1_pos.y += 1;
-				else p1_pos.y = 1;
+				if (jR.pos.y < 44) jR.pos.y += 1;
+				else jR.pos.y = 1;
 				break;
 			case DER:
-				 if (p1_pos.x < 79) p1_pos.x += 1;
-				 else p1_pos.x = 0;
+				 if (jR.pos.x < 79) jR.pos.x += 1;
+				 else jR.pos.x = 0;
 				break;
 			case IZQ:
-				 if (p1_pos.x > 0) p1_pos.x -= 1;
-				 else p1_pos.x = 79;
+				 if (jR.pos.x > 0) jR.pos.x -= 1;
+				 else jR.pos.x = 79;
 				break;
 		}
-		print("*", p1_pos.x, p1_pos.y, (4 << 4) | (15 & 0x0F));
+		print("*", jR.pos.x, jR.pos.y, (4 << 4) | (15 & 0x0F));
 	} else {
-		if (POS_IGUALES(p1_pos, p2_pos)) print("*", p2_pos.x, p2_pos.y, (4 << 4) | (15 & 0x0F));
-		else print(" ", p2_pos.x, p2_pos.y, (7 << 4));
+		if (POS_IGUALES(jR.pos, jA.pos)) print("*", jA.pos.x, jA.pos.y, (4 << 4) | (15 & 0x0F));
+		else print(" ", jA.pos.x, jA.pos.y, (7 << 4));
 
 		switch (dir) {
 			case ARB:
-				if (p2_pos.y > 1) p2_pos.y -= 1;
-				else p2_pos.y = 44;
+				if (jA.pos.y > 1) jA.pos.y -= 1;
+				else jA.pos.y = 44;
 				break;
 			case ABA:
-				if (p2_pos.y < 44) p2_pos.y += 1;
-				else p2_pos.y = 1;
+				if (jA.pos.y < 44) jA.pos.y += 1;
+				else jA.pos.y = 1;
 				break;
 			case DER:
-				 if (p2_pos.x < 79) p2_pos.x += 1;
-				 else p2_pos.x = 0;
+				 if (jA.pos.x < 79) jA.pos.x += 1;
+				 else jA.pos.x = 0;
 				break;
 			case IZQ:
-				 if (p2_pos.x > 0) p2_pos.x -= 1;
-				 else p2_pos.x = 79;
+				 if (jA.pos.x > 0) jA.pos.x -= 1;
+				 else jA.pos.x = 79;
 				break;
 		}
-		print("*", p2_pos.x, p2_pos.y, (1 << 4) | (15 & 0x0F));
+		print("*", jA.pos.x, jA.pos.y, (1 << 4) | (15 & 0x0F));
 	}
 }
 

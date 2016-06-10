@@ -9,7 +9,6 @@
 
 #include "defines.h"
 #include "screen.h"
-#include "mmu.h"
 
 typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ARB = 0xA33, ABA = 0x883  } direccion;
 
@@ -26,9 +25,19 @@ typedef struct str_pos
 {
 	unsigned char x;
 	unsigned char y;
-} pos;
+} posicion;
 
-extern pos p1_pos;
-extern pos p2_pos;
+typedef struct str_jugador
+{
+	posicion pos;
+	unsigned int vida;
+	unsigned int puntos;
+	unsigned int tareasRestantes;
+} jugador;
+
+
+
+extern jugador jR;
+extern jugador jA;
 
 #endif  /* !__GAME_H__ */
