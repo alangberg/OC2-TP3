@@ -150,6 +150,34 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
     print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
 }
 
+void imprimirTareasSanas() {
+    int i;
+    for(i = 0; i < 15; i++) {
+        if(MainSystem.Htask[i].vivo) {
+            switch (MainSystem.Htask[i].viruseada) {
+                case H:
+                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (0xC << 4));
+                    break;
+                case A:
+                    print("A", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4));
+                    break;
+                case B:
+                    print("B", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4));
+                   break;
+           }
+        }
+    }
+}
+
+void imprimirTareasJugador(tipoTarea j) {
+    // int i;
+    // for(i = 0; i < 5; i++) {
+    //     if(MainSystem.Htask[i].vivo) {
+            
+    //     }
+    // }
+}
+
 void imprimirError() {
     //ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
 

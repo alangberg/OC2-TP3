@@ -6,6 +6,7 @@
 */
 
 #include "mmu.h"
+#include "screen.h"
 
 //Macros
 #define PDE_INDEX(virtual) virtual >> 22
@@ -29,28 +30,47 @@ void mmu_inicializar_dir_kernel(){
 	}
 }
 
-unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos){
+unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 
-	int* page_directory_tareas = (int*) mmu_proxima_pagina_fisica_libre();
-	page_directory_tareas[0] = (int) (page_directory_tareas + 0x3);
+	pde_entry* page_directory_tareas = (pde_entry*) mmu_proxima_pagina_fisica_libre();
+	page_directory_tareas[0].present = 1;
+	page_directory_tareas[0].rw = 1;
 	int i;
-	for (i = 1; i < 1024; ++i) {
-		page_directory_tareas[i]= 0x0;
+	for (i = 1; i < 1024; i++) {
+	    page_directory_tareas[i].present = 0;
+	    page_directory_tareas[i].rw = 0;
+	    page_directory_tareas[i].us = 0;
+	    page_directory_tareas[i].pwt = 0;
+	    page_directory_tareas[i].pcd = 0;
+	    page_directory_tareas[i].a = 0;
+	    page_directory_tareas[i].d = 0;
+	    page_directory_tareas[i].pat = 0;        
+	    page_directory_tareas[i].g = 0;
+	    page_directory_tareas[i].disponible = 0;
+	    page_directory_tareas[i].base = 0;
 	}
-	int* page_table_tareas = (int*) mmu_proxima_pagina_fisica_libre();
-	for (i = 0; i < 1024; ++i) {
-		page_table_tareas[i] = ((i << 12) | 3);
+
+	pte_entry* page_table_tareas = (pte_entry*) mmu_proxima_pagina_fisica_libre();
+	
+
+	for (i = 0; i < 1024; i++) {
+		page_table_tareas[i].present = 1;
+		page_table_tareas[i].rw = 1;
+		page_table_tareas[i].base = (unsigned int) i;  // = ((i << 12) | 3)
 	}
+
+	page_directory_tareas[0].base = (unsigned int) page_table_tareas;
+	breakpoint();
 
 	unsigned int* fisica = (unsigned int*) game_dame_fisica_de_posicion(pos);
-	// aca esta todo K
 
 	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica);
-breakpoint();
+	breakpoint();
+
 	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica);
+
 	int j;
-	for (j = 0; j < 1024; ++j)
-	{
+	for (j = 0; j < 1024; ++j) {
 		fisica[i] = codigo[i];
 	}
 	
@@ -58,6 +78,43 @@ breakpoint();
 
 	return (unsigned int)page_directory_tareas;
 }
+
+
+
+
+// unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, unsigned int x, unsigned int y){
+//  	page_entries_set* pd = (page_entries_set*) mmu_proxima_pagina_fisica_libre();
+//  	unsigned int i = 0;
+// 	while(i < 1024){
+// 		pd->page_entries[i].attr = 0;
+// 		i++;
+// 	}
+
+// 	//IDENTITY 4MB
+// 	i = 0;
+// 	while(i<1024){
+// 		mmu_mapear_pagina(i*PAGE_SIZE,(unsigned int) pd,i*PAGE_SIZE,0);
+// 		i++;
+// 	}
+
+// 	//CODIGO EN LA 8kk
+// 	unsigned int* addr = (unsigned int*) pointToAddr(x,y);
+// 	mmu_mapear_pagina(CODIGO,(unsigned int) pd,(unsigned int) addr, PG_USER);
+// 	//MAPEO EN EL KERNEL LA DIRECCION TAMBIEN
+// 	mmu_mapear_pagina((unsigned int) addr,rcr3(),(unsigned int) addr,0);
+// 	i = 0;
+// 	//Copio int a int
+// 	while(i < 1024){
+// 		addr[i] = codigo[i];
+// 		i++;
+// 	}
+// 	mmu_unmapear_pagina((unsigned int) addr,rcr3());
+		
+// 	return (unsigned int) pd;
+// }
+
+
+
 
 unsigned int game_dame_fisica_de_posicion(posicion pos) {
 	return (0x400000 + (pos.y*80 + pos.x)*0x8000);
@@ -92,11 +149,16 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 		PDE->present = 1;
 		PDE->rw = 1;
 		// dejo el resto de la tabla en 0
-		int i;
 		pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
+		
+		print("aca esta ok 1", 30, 30, (0 << 4) | (15 & 0x0F));
+		
+		int i;
 		for (i = 1; i < 1024; i++) {
-			pte_indice[i].present = 0;
+			pte_indice[i].present = 1;
 		}
+
+		print("aca esta ok 2", 30, 30, (0 << 4) | (15 & 0x0F));	
 	}
 
 	pte_entry* a = (pte_entry*) ((PDE->base)<<12);
@@ -107,6 +169,7 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 	PTE->rw = 1;
 
 	tlbflush();
+	print("aca esta ok 3", 30, 30, (0 << 4) | (15 & 0x0F));
 }
 
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
@@ -136,3 +199,4 @@ unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	tlbflush();
 	return cr3;
 }
+

@@ -37,7 +37,7 @@ void game_mover_cursor(int jugador, direccion dir) {
 		}
 		print("*", MainSystem.jugadores[0].pos.x, MainSystem.jugadores[0].pos.y, (4 << 4) | (15 & 0x0F));
 	} else {
-		if (POS_IGUALES(MainSystem.jugadores[0].pos, MainSystem.jugadores[1].pos)) print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (4 << 4) | (15 & 0x0F));																																																																																																																																	
+		if (POS_IGUALES(MainSystem.jugadores[0].pos, MainSystem.jugadores[1].pos)) print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (4 << 4) | (15 & 0x0F));
 		else print(" ", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (7 << 4));
 
 		switch (dir) {
@@ -64,22 +64,19 @@ void game_mover_cursor(int jugador, direccion dir) {
 
 void game_lanzar(unsigned int jugador) {
 	//void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry, unsigned int* cr3) {
-	posicion pos;
-	unsigned int* code;
-	unsigned short* gdtE;
-	unsigned int* cr3;
-	if (jugador == 1) {
-		pos = MainSystem.jugador[0].pos;
-		code = 0x11000;
-	} else {
-		pos = MainSystem.jugador[1].pos;
-		code = 0x12000;
-	}
+	// posicion pos;
+	// unsigned int* code;
+	// unsigned short* gdtE;
+	// unsigned int* cr3;
+	// if (jugador == 1) {
+	// 	pos = MainSystem.jugadores[0].pos;
+	// 	code = (unsigned int*) 0x11000;
+	// } else {
+	// 	pos = MainSystem.jugadores[1].pos;
+	// 	code = (unsigned int*) 0x12000;
+	// }
 
-	
-		
-		
-		tss_nueva_tarea(code, pos, gdtE, cr3);		
+	// tss_nueva_tarea(code, pos, gdtE, cr3);
 }
 
 
@@ -163,18 +160,18 @@ void game_mapear(int x, int y) {
 
 void game_init() {
 	jugador jA;
+	jA.pos.x = 20;
+	jA.pos.y = 20;
 	jA.vida = 20;
 	jA.puntos = 0;
 	jA.tareaActual = 0;
-	jA.pos.x = 20;
-	jA.pos.y = 20;
 
 	jugador jB;
+	jB.pos.x = 50;
+	jB.pos.y = 20;
 	jB.vida = 20;
 	jB.puntos = 0;
 	jB.tareaActual = 0;
-	jB.pos.x = 50;
-	jB.pos.y = 20;
 
 	MainSystem.jugadores[0] = jA;
 	MainSystem.jugadores[1] = jB;
@@ -188,7 +185,7 @@ void game_init() {
 	MainSystem.itH = 0;
 
 	for (i = 0; i < 15; i++) {
-	 	posicion p = { i, i };
+	 	posicion p = {i + 1, i + 1};
 	 	MainSystem.Htask[i] = tareaNueva((unsigned int*) 0x13000, H, p );
 	}
 }
@@ -211,4 +208,6 @@ tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos) {
 void debugMode() {
 	if (MainSystem.debugMode) imprimirError();
 }
+
+
 

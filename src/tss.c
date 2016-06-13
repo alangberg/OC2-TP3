@@ -8,6 +8,8 @@
 #include "tss.h"
 #include "gdt.h"
 #include "mmu.h"
+#include "screen.h"
+
 
 tss tss_idle;
 tss tss_inicial;
@@ -16,7 +18,8 @@ gdt_entry gdt[GDT_COUNT];
 void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry, unsigned int* cr3) {
 	tss* tss_nueva = (tss*) mmu_proxima_pagina_fisica_libre();
     unsigned int i = tarea_gdt_libre();
-        gdt[i] = (gdt_entry) {
+
+    gdt[i] = (gdt_entry) {
         (unsigned short)    sizeof(tss)-1,                          /* limit[0:15]  */ 
         (unsigned short)    (unsigned int) tss_nueva,               /* base[0:15]   */
         (unsigned char)     (unsigned int) tss_nueva >> 16,         /* base[23:16]  */
@@ -31,9 +34,9 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
         (unsigned char)     0x00,                                   /* g            */
         (unsigned char)     (unsigned int) tss_nueva >> 24,         /* base[31:24]  */
     };
-// hasta aca estla todo supero ultra K
-    unsigned int nuevaCR3 = mmu_inicializar_dir_tarea(code, pos);       // aca se rompe COPIAR DE NACHO. atte: Julian.
+// hasta aca esta todo super
     
+    unsigned int nuevaCR3 = mmu_inicializar_dir_tarea(code, pos); // aca se rompe
     breakpoint();
     
     tss_nueva->esp0 = mmu_proxima_pagina_fisica_libre() + PAGE_SIZE;    //Prox pagina fisica libre
@@ -59,8 +62,8 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
 unsigned int tarea_gdt_libre(){
     int encontrado = 0;
     unsigned int i;
-    for (i = 11; i < 50 && !encontrado; ++i){
-        encontrado = encontrado || gdt[i].p == 0;
+    for (i = 11; i < 50 && !encontrado; i++){
+        encontrado = encontrado || (gdt[i].p == 0);
     }
     return i;
 }

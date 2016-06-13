@@ -140,7 +140,7 @@ mProtegido:
     push esi
     push edi
     call mmu_unmapear_pagina
-
+    xchg bx, bx
     ; Inicializar tss
     ; Inicializar tss de la tarea Idle
 
