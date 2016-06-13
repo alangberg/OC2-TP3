@@ -29,8 +29,6 @@ void mmu_inicializar_dir_kernel(){
 	}
 }
 
-
-
 unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos){
 
 	int* page_directory_tareas = (int*) mmu_proxima_pagina_fisica_libre();
@@ -39,16 +37,16 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos){
 	for (i = 1; i < 1024; ++i) {
 		page_directory_tareas[i]= 0x0;
 	}
-
 	int* page_table_tareas = (int*) mmu_proxima_pagina_fisica_libre();
 	for (i = 0; i < 1024; ++i) {
 		page_table_tareas[i] = ((i << 12) | 3);
 	}
 
 	unsigned int* fisica = (unsigned int*) game_dame_fisica_de_posicion(pos);
+	// aca esta todo K
 
 	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica);
-
+breakpoint();
 	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica);
 	int j;
 	for (j = 0; j < 1024; ++j)
@@ -93,7 +91,6 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 		// le pongo en 1 el PRESENT y el RW como dice la diapo
 		PDE->present = 1;
 		PDE->rw = 1;
-
 		// dejo el resto de la tabla en 0
 		int i;
 		pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
@@ -103,12 +100,12 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 	}
 
 	pte_entry* a = (pte_entry*) ((PDE->base)<<12);
-
 	pte_entry* PTE = (pte_entry*) &(a[PTE_INDEX(virtual)]);
 
 	PTE->base = fisica;
 	PTE->present = 1;
 	PTE->rw = 1;
+
 	tlbflush();
 }
 

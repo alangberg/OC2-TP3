@@ -19,6 +19,13 @@ extern fin_intr_pic1
 ;; Sched
 extern sched_proximo_indice
 
+;; Game
+
+extern game_soy
+extern game_donde
+extern game_mapear
+extern debugMode
+
 
 
 ;;Mensajes
@@ -92,6 +99,7 @@ global _isr%1
 _isr%1:
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
+    call debugMode
     jmp $
     
 %endmacro
@@ -137,8 +145,20 @@ global _isr32
 
 _isr32:
     pushad
-    call fin_intr_pic1
+
     call proximo_reloj
+    call sched_proximo_indice
+    
+    cmp ax, 0
+    je  .nojump
+        mov [sched_tarea_selector], ax
+        call fin_intr_pic1
+        jmp far [sched_tarea_offset] ;FAR?
+        jmp .end
+    
+    .nojump:
+    call fin_intr_pic1
+    .end:
     popad
 iret
 
@@ -174,12 +194,32 @@ global _isr102
 
 _isr102:
     pushad
+    push ebx ; Preguntar a Pato. Y si no esta a Nacho Fernandez y sino a David (le echamos la culpa  a leopoldo)
     call fin_intr_pic1
     
-    mov eax, 0x42
-    mov [ebp-24], eax
+    cmp eax, DONDE
+    jne .soy
+.donde:
+    
+    call game_donde
+    jmp .fin
+
+.soy:
+    cmp eax, SOY
+    jne .mapear
+
+    call game_soy
+    jmp .fin
+
+.mapear:
+    push ecx ;NACHO      
+    call game_mapear
+    pop ecx ;NACHO
+.fin:
+    pop ebx ;NACHO
+    jmp 0x50:0 ;IDLE NACHO
     popad
-iret
+    iret
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;
@@ -196,5 +236,6 @@ proximo_reloj:
                 imprimir_texto_mp ebx, 1, 0x0f, 49, 79
                 popad
         ret
-        
-        
+
+
+

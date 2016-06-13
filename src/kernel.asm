@@ -9,15 +9,20 @@ extern IDT_DESC
 extern idt_inicializar
 extern imprimirJuego
 extern systemClock
+extern mmu_inicializar
 extern mmu_inicializar_dir_kernel
 extern mmu_mapear_pagina
 extern mmu_unmapear_pagina
 extern resetear_pic
 extern habilitar_pic
 extern tss_inicializar_idle
+extern tss_nueva_tarea
+extern game_init
 
 %define PAGE_DIRECTORY_KERNEL   0x27000
 %define PAGE_TABLE_KERNEL		0x28000
+%define PANTALLA_MAPA           0x400000
+
 
 global start
 
@@ -26,7 +31,7 @@ global start
 jmp start
 
 ;;
-;; Seccion de datos.
+;; Seccion de datos.ñ
 ;; -------------------------------------------------------------------------- ;;
 iniciando_mr_msg db     'Iniciando kernel (Modo Real)...'
 iniciando_mr_len equ    $ - iniciando_mr_msg
@@ -75,84 +80,68 @@ mProtegido:
 
     ;Establecer selectores de segmentos
     xor ax, ax
-    mov ax, 0x28   ;datos primera tabla lvl 0
-    mov ds, ax ;VERDURITA
-    mov ss, ax ;VERDURITA
-    mov es, ax ;VERDURITA
-    mov gs, ax ;VERDURITA
+    mov ax, 0x28
+    mov ds, ax      
+    mov ss, ax      
+    mov es, ax      
+    mov gs, ax      
     xor ax, ax
     mov ax, 0x40
-    mov fs, ax ;VERDURITA Pongo la entrada de Video
+    mov fs, ax
 
 
     ; Establecer la base de la pila
-    mov esp, 0x27000 ;VERDURITA
-    mov ebp, esp ;Hace falta algo mas para la pila ?
+    mov esp, 0x27000    
+    mov ebp, esp
 
     
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
 
-    ; Inicializar pantalla  ;ALTA VERDURA
+    ; Inicializar pantalla
     
- ;    xor ecx, ecx
- ;    mov ecx, 0xdc0
- ;    sub ecx, 160
- ;    xor esi, esi
- ;    add esi, 160
-	; .ciclo:
- ;    	mov word [fs:esi], 0xF700
- ;        add esi, 2
- ;    loop .ciclo
-
     mov edi, 10
     mov esi, 10
+
 
     push edi
     push esi
 
-    .gameLoop:
-        call imprimirJuego
-        ; add systemClock, 1
-    ; jmp .gameLoop
+    call imprimirJuego
 
     add esp, 2*4
 
     ; Inicializar el manejador de memoria
- 	 
+    call mmu_inicializar
     ; Inicializar el directorio de paginas
     call mmu_inicializar_dir_kernel
+    
     ; Cargar directorio de paginas
-	mov eax, PAGE_DIRECTORY_KERNEL
-	mov cr3, eax
+    mov eax, PAGE_DIRECTORY_KERNEL
+    mov cr3, eax
 
     ; Habilitar paginacion
- 	mov eax, cr0
-	or eax, 0x80000000
-	mov cr0, eax ;Verdurita
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
 
-    mov edi, 0x00400000
+    mov edi, PANTALLA_MAPA
     mov esi, cr3
-    mov edx, 0x00400000
+    mov edx, PANTALLA_MAPA
     push edx
     push esi
     push edi
     call mmu_mapear_pagina
-;    xchg bx, bx    
-
+ 
     add esp, 3*4
 
-    mov edi, 0x00400000
+    mov edi, PANTALLA_MAPA
     mov esi, cr3
     push esi
     push edi
     call mmu_unmapear_pagina
 
-    ;xchg bx, bx    
     ; Inicializar tss
-
-    ; hay que inicializar las tareas A-H
-
     ; Inicializar tss de la tarea Idle
 
     call tss_inicializar_idle
@@ -160,23 +149,24 @@ mProtegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-
     call idt_inicializar
     
-    ; Cargar IDT
- 	
+    ; Cargar IDT   
     LIDT [IDT_DESC]
 
     ; Configurar controlador de interrupciones
-
     call resetear_pic
     call habilitar_pic
     
 
     ; Cargar tarea inicial
-
-    mov ax, 0x48  ;
+    mov ax, 0x48
     ltr ax
+
+    call game_init
+    xchg bx, bx 
+    call imprimirJuego
+    xchg bx, bx 
 
     ; Habilitar interrupciones
     sti
@@ -185,9 +175,21 @@ mProtegido:
 
     jmp 0x50:0
 
-    mov eax, 0x11000
+    ;  xor eax, eax
+    ;  mov eax, 0x11000
+    ;  xor edi, edi
+    ;  mov edi, 0x1414
+    ;  push edi
+    ;  push eax
+    ;  xchg bx, bx
+    
+    ;  call tss_nueva_tarea
+    ;  xchg bx, bx    
+    
 
+    ; jmp 0x58:0
 
+    
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
     mov ebx, 0xFFFF
@@ -199,3 +201,45 @@ mProtegido:
 ;; -------------------------------------------------------------------------- ;;
 
 %include "a20.asm"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;andyputo

@@ -17,7 +17,7 @@
 
 void tss_inicializar_idle();
 unsigned int tarea_gdt_libre();
-void tss_nueva_tarea(unsigned int* code, posicion pos);
+void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry, unsigned int* cr3);
 
 typedef struct str_tss {
     unsigned short  ptl;
@@ -59,6 +59,5 @@ typedef struct str_tss {
     unsigned short  dtrap;
     unsigned short  iomap;
 } __attribute__((__packed__, aligned (8))) tss;
-
 
 #endif  /* !__TSS_H__ */

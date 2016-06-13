@@ -27,6 +27,7 @@
 #define PAGE_SIZE				0x1000
 #define INICIO_PAGINAS_LIBRES	0x100000
 #define DIR_VIRTUAL_TAREA		0x8000000
+#define PAGINA_MAPEADA		    0x8001000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -62,5 +63,10 @@
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
 #define VIDEO_SCREEN            0x000B8000 /* direccion fisica del buffer de video */
+
+typedef struct str_pos {
+	unsigned char x;
+	unsigned char y;
+} posicion;
 
 #endif  /* !__DEFINES_H__ */

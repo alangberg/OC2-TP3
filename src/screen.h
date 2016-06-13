@@ -33,4 +33,6 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
 void imprimirTeclado(char codigo);
 
+void imprimirError();
+
 #endif  /* !__SCREEN_H__ */
