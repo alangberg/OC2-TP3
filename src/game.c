@@ -63,11 +63,12 @@ void game_mover_cursor(int jugador, direccion dir) {
 }
 
 void game_lanzar(unsigned int jugador) {
-	//void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry, unsigned int* cr3) {
+	
 	// posicion pos;
 	// unsigned int* code;
 	// unsigned short* gdtE;
 	// unsigned int* cr3;
+	
 	// if (jugador == 1) {
 	// 	pos = MainSystem.jugadores[0].pos;
 	// 	code = (unsigned int*) 0x11000;

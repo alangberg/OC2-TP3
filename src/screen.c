@@ -148,6 +148,8 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
     print("*", MainSystem.jugadores[0].pos.x, MainSystem.jugadores[0].pos.y, (4 << 4) | (15 & 0x0F));
     print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
+
+    imprimirTareasSanas();
 }
 
 void imprimirTareasSanas() {
@@ -156,13 +158,13 @@ void imprimirTareasSanas() {
         if(MainSystem.Htask[i].vivo) {
             switch (MainSystem.Htask[i].viruseada) {
                 case H:
-                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (0xC << 4));
+                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (2 << 4));
                     break;
                 case A:
-                    print("A", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4));
+                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4));
                     break;
                 case B:
-                    print("B", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4));
+                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4));
                    break;
            }
         }

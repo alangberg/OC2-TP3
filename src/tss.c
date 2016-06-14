@@ -37,7 +37,6 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
 // hasta aca esta todo super
     
     unsigned int nuevaCR3 = mmu_inicializar_dir_tarea(code, pos); // aca se rompe
-    breakpoint();
     
     tss_nueva->esp0 = mmu_proxima_pagina_fisica_libre() + PAGE_SIZE;    //Prox pagina fisica libre
     tss_nueva->ss0 = GDT_POSICION_DATA_KERNEL;  

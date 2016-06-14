@@ -22,13 +22,17 @@ tipoTarea siguienteTarea(tipoTarea actual) {
 
 unsigned short sched_proximo_indice() {
 	#define TAREAS_JUG_SIGUIENTE MainSystem.jugadores[typeSiguiente]
-
+	
 	tipoTarea typeSiguiente = siguienteTarea(MainSystem.taskActual->type);
-
+	
 	if (typeSiguiente != H) {
 		int i;
-		for (i = TAREAS_JUG_SIGUIENTE.tareaActual + 1; i < TAREAS_JUG_SIGUIENTE.tareaActual && !TAREAS_JUG_SIGUIENTE.task[i].vivo; i++){
-			if (i == 5) i = 0;
+		if (TAREAS_JUG_SIGUIENTE.tareaActual < 4) i = TAREAS_JUG_SIGUIENTE.tareaActual + 1;
+		else i = 0;
+
+	while (i != TAREAS_JUG_SIGUIENTE.tareaActual && !TAREAS_JUG_SIGUIENTE.task[i].vivo){
+			i++;
+			if (i > 4) i = 0;
 		}
 		if (i != TAREAS_JUG_SIGUIENTE.tareaActual) {
 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
@@ -36,15 +40,19 @@ unsigned short sched_proximo_indice() {
 			return MainSystem.taskActual->gdtEntry;
 		}
 	}
-	breakpoint();
-	int i;
-	for (i = MainSystem.itH + 1; i < MainSystem.itH && !MainSystem.Htask[i].vivo; i++) {
-		if (i == 15) i = 0;
+	
+	int j;
+	if (MainSystem.itH < 14) j = MainSystem.itH + 1;
+	else j = 0;
+
+	while (j != MainSystem.itH && !MainSystem.Htask[j].vivo) {
+		j++;
+		if (j > 14) j = 0;
 	}
 
-	if (i != MainSystem.itH) {
-		MainSystem.itH = i;
-		MainSystem.taskActual = &(MainSystem.Htask[i]);
+	if (j != MainSystem.itH) {
+		MainSystem.itH = j;
+		MainSystem.taskActual = &(MainSystem.Htask[j]);
 		return MainSystem.taskActual->gdtEntry;	
 	}
 	return 0;

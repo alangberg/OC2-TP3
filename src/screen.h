@@ -35,4 +35,6 @@ void imprimirTeclado(char codigo);
 
 void imprimirError();
 
+void imprimirTareasSanas();
+
 #endif  /* !__SCREEN_H__ */

@@ -60,12 +60,10 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 	}
 
 	page_directory_tareas[0].base = (unsigned int) page_table_tareas;
-	breakpoint();
 
 	unsigned int* fisica = (unsigned int*) game_dame_fisica_de_posicion(pos);
 
 	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica);
-	breakpoint();
 
 	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica);
 
@@ -143,25 +141,21 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 	// si PRESENT es 0
 	if (!(PDE->present)) {
 		// pongo la dir en 0
-		PDE->base = mmu_proxima_pagina_fisica_libre();
+		PDE->base = mmu_proxima_pagina_fisica_libre() >> 12;
 		// la igualo con el resultado de la funcion (me da un numero de 32bits donde los primeros 12 son 0s asi que esta todo re piolanga)
 		// le pongo en 1 el PRESENT y el RW como dice la diapo
 		PDE->present = 1;
 		PDE->rw = 1;
 		// dejo el resto de la tabla en 0
-		pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
-		
-		print("aca esta ok 1", 30, 30, (0 << 4) | (15 & 0x0F));
+		pte_entry* pte_indice = (pte_entry*) ((PDE->base) << 12);
 		
 		int i;
 		for (i = 1; i < 1024; i++) {
 			pte_indice[i].present = 1;
 		}
-
-		print("aca esta ok 2", 30, 30, (0 << 4) | (15 & 0x0F));	
 	}
 
-	pte_entry* a = (pte_entry*) ((PDE->base)<<12);
+	pte_entry* a = (pte_entry*) ((PDE->base) << 12);
 	pte_entry* PTE = (pte_entry*) &(a[PTE_INDEX(virtual)]);
 
 	PTE->base = fisica;
@@ -169,7 +163,6 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 	PTE->rw = 1;
 
 	tlbflush();
-	print("aca esta ok 3", 30, 30, (0 << 4) | (15 & 0x0F));
 }
 
 /*Desmapea la pagina fisica en el esquema de paginacion cr3.*/
