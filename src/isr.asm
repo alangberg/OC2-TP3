@@ -197,7 +197,7 @@ global _isr102
 
 _isr102:
     pushad
-    push ebx ; Preguntar a Pato. Y si no esta a Nacho Fernandez y sino a David (le echamos la culpa  a leopoldo)
+    push ebx
     call fin_intr_pic1
     
     cmp eax, DONDE
@@ -215,12 +215,12 @@ _isr102:
     jmp .fin
 
 .mapear:
-    push ecx ;NACHO      
+    push ecx      
     call game_mapear
-    pop ecx ;NACHO
+    pop ecx
 .fin:
-    pop ebx ;NACHO
-    jmp 0x50:0 ;IDLE NACHO
+    pop ebx
+    jmp 0x50:0
     popad
     iret
 

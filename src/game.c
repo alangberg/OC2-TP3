@@ -62,9 +62,9 @@ void game_lanzar(unsigned int jugador) {
 		{}
 		if (jugador == 0) {
 			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, JUGADOR.pos);
+			breakpoint();
 		} else {
 			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, JUGADOR.pos);
-			breakpoint();
 		}
 		JUGADOR.cantidadVivas++;
 	}

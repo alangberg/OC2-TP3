@@ -173,7 +173,6 @@ mProtegido:
     ; Saltar a la primera tarea: Idle
     ; xchg bx, bx
     jmp 0x50:0
-    xchg bx, bx
     ;  xor eax, eax
     ;  mov eax, 0x11000
     ;  xor edi, edi

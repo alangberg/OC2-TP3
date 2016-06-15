@@ -215,6 +215,7 @@ void imprimirTareasJugador(tipoTarea j) {
     }
 }
 
+
 void imprimirError() {
 
 #define printear(r, x, y) print(r, x, y, (7 << 4) | (0 & 0x0F));

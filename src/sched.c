@@ -44,7 +44,7 @@ unsigned short sched_proximo_indice() {
 			relojJug(k, i);
 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
 			MainSystem.taskActual = &(TAREAS_JUG_SIGUIENTE.task[i]);
-			breakpoint();
+			//breakpoint();
 			return MainSystem.taskActual->gdtEntry;
 		}
 	}
@@ -69,4 +69,4 @@ unsigned short sched_proximo_indice() {
 }
 
 
-//動作するように準備をします.
+//動作するように準備をします
