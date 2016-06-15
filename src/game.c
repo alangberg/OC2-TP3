@@ -55,44 +55,70 @@ void game_mover_cursor(int jugador, direccion dir) {
 }
 
 void game_lanzar(unsigned int jugador) {
-	//print_int(MainSystem.jugadores[0].task[0].pos.x, 30, 30, C_FG_WHITE);
-	//print_int(MainSystem.jugadores[0].task[0].pos.y, 31, 31, C_FG_WHITE);
 	#define JUGADOR MainSystem.jugadores[jugador]
 	if (JUGADOR.cantidadVivas < 5) {
 		int i;
 		for (i = 0; i < 5 && JUGADOR.task[i].vivo; i++)
 		{}
 		if (jugador == 0) {
-			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, JUGADOR.pos);
+			posicion posAux = (posicion) {JUGADOR.pos.x + 1, JUGADOR.pos.y};
+			if (noHayNadaMapeadoAca(posAux, A)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, posAux);
 			//tarea* tsk = &JUGADOR.task[i];
 			//matarTarea(tsk);
 		} else {
-			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, JUGADOR.pos);
+			posicion posAux = (posicion) {JUGADOR.pos.x - 1, JUGADOR.pos.y};
+			if (noHayNadaMapeadoAca(posAux, B)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, posAux);
 		}
 		JUGADOR.cantidadVivas++;
 	}
 }
 
+unsigned int noHayNadaMapeadoAca(posicion pos, tipoTarea t) {
+	int i;
+	int j;
+	switch (t) {
+		case A:
+			j = 5;
+			for (i = 0; i < j && (MainSystem.jugadores[0].task[i].pos.x != pos.x || MainSystem.jugadores[0].task[i].pos.y != pos.y || !MainSystem.jugadores[0].task[i].vivo); i++)
+			{};
+			break;
+		case B:
+			j = 5;
+			for (i = 0; i < j && (MainSystem.jugadores[1].task[i].pos.x != pos.x || MainSystem.jugadores[1].task[i].pos.y != pos.y || !MainSystem.jugadores[1].task[i].vivo); i++)
+			{};
+			break;
+		case H:
+			j = 15;
+			for (i = 0; i < j && (MainSystem.Htask[i].pos.x != pos.x || MainSystem.Htask[i].pos.y != pos.y || !MainSystem.Htask[i].vivo); i++)
+			{};
+			break;
+	}
+	return (i == j);
+}
+
 void game_soy(unsigned int yoSoy) {
-	if (yoSoy == 0x325){ //A
+	if (yoSoy == 0x841){ //A
 		MainSystem.taskActual->viruseada = A;
 	}
-	if (yoSoy == 0x841) { //B
+	if (yoSoy == 0x325) { //B
 		MainSystem.taskActual->viruseada = B;
 	}
 }
 
 void game_donde(unsigned int* pos) {
-	pos[0] = MainSystem.taskActual->pos.x;
-	pos[1] = MainSystem.taskActual->pos.y - 1 ;
+	pos[1] = MainSystem.taskActual->pos.x + 1;
+	pos[0] = MainSystem.taskActual->pos.y;
 }
 
-void game_mapear(int x, int y) {
+void game_mapear(int y, int x) {
 	posicion posAux;
 	posAux.x = x;
 	posAux.y = y;
 	unsigned int  fisicaPosicion = game_dame_fisica_de_posicion(posAux);
 	mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion, 1);
+
+	print(" ", MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
+	MainSystem.taskActual->pos = posAux;
 }
 
 void game_init() {
@@ -148,15 +174,18 @@ void debugMode() {
 	if (MainSystem.debugMode) imprimirError();
 }
 
-void matarTarea(tarea* tsk){
-	if(tsk->type != H){
-		jugador player = MainSystem.jugadores[tsk->type];    	//A o B
-		tsk->vivo = 0;
-		gdt[tsk->gdtEntry].p = 0;
-		if(player.vida != 0){
-			player.vida--;		
+void matarTarea() {
+	if(MainSystem.taskActual->type != H){
+		int j;
+		if (MainSystem.taskActual->type == A) j = 0;
+		else j = 1;
+		jugador player = MainSystem.jugadores[j];    	//A o B
+		MainSystem.taskActual->vivo = 0;
+		gdt[MainSystem.taskActual->gdtEntry].p = 0;
+		if(player.vida != 0) {
+			player.vida--;
 		}
 		player.cantidadVivas--;
-	} 
-	MainSystem.jugadores[tsk->viruseada].puntos--;
+	}
+	MainSystem.jugadores[MainSystem.taskActual->viruseada].puntos--;
 }

@@ -59,6 +59,8 @@ tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos);
 
 void debugMode();
 
-void matarTarea(tarea* tsk);
+void matarTarea();
+
+unsigned int noHayNadaMapeadoAca(posicion pos, tipoTarea t);
 
 #endif  /* !__GAME_H__ */

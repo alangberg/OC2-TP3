@@ -115,7 +115,7 @@ void relojJug(int jugador, int i) {
 void relojH(int i) {
     char* reloj[4] = {"|","/","-","\\"};
     int j = (MainSystem.Htask[i].estadoReloj);
-    print(reloj[j], 4 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    print(reloj[j], 2 + 2*i , 48, (0 << 4) | (15 & 0x0F));
     MainSystem.Htask[i].estadoReloj++;
     if (MainSystem.Htask[i].estadoReloj == 4) MainSystem.Htask[i].estadoReloj = 0;
 }
@@ -179,7 +179,7 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 }
 
 
-void imprimirDataJugadores(){
+void imprimirDataJugadores() {
     print_int(MainSystem.jugadores[0].vida, 43, 48, (0 << 4) | (15 & 0x0F));
     print_int(MainSystem.jugadores[1].vida, 66, 48, (0 << 4) | (15 & 0x0F));
 
@@ -193,13 +193,13 @@ void imprimirTareasSanas() {
         if(MainSystem.Htask[i].vivo) {
             switch (MainSystem.Htask[i].viruseada) {
                 case H:
-                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (2 << 4));
+                    print("H", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (2 << 4) | (15 & 0x0F));
                     break;
                 case A:
-                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4));
+                    print("A", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4) | (15 & 0x0F));
                     break;
                 case B:
-                    print(" ", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4));
+                    print("B", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4) | (15 & 0x0F));
                    break;
            }
         }

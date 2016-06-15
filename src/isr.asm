@@ -26,6 +26,7 @@ extern game_donde
 extern game_mapear
 extern debugMode
 extern actualizarPantalla
+extern matarTarea
 
 
 ;;Mensajes
@@ -100,8 +101,9 @@ _isr%1:
 
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
+    call matarTarea
     call debugMode
-    jmp $
+    jmp 0x50:0
     
 %endmacro
 
@@ -198,12 +200,10 @@ global _isr102
 _isr102:
     pushad
     push ebx
-    call fin_intr_pic1
     
     cmp eax, DONDE
     jne .soy
 .donde:
-    
     call game_donde
     jmp .fin
 
@@ -215,10 +215,13 @@ _isr102:
     jmp .fin
 
 .mapear:
-    push ecx      
+    push ecx
     call game_mapear
     pop ecx
+
 .fin:
+    call fin_intr_pic1
+    
     pop ebx
     jmp 0x50:0
     popad
