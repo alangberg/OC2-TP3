@@ -21,7 +21,7 @@ extern game_init
 extern actualizarPantalla
 
 %define PAGE_DIRECTORY_KERNEL   0x27000
-%define PAGE_TABLE_KERNEL		0x28000
+%define PAGE_TABLE_KERNEL       0x28000
 %define PANTALLA_MAPA           0x400000
 
 
@@ -125,7 +125,6 @@ mProtegido:
     mov eax, cr0
     or eax, 0x80000000
     mov cr0, eax
-
 
     mov edi, PANTALLA_MAPA
     mov esi, cr3

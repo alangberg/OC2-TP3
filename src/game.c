@@ -55,6 +55,8 @@ void game_mover_cursor(int jugador, direccion dir) {
 }
 
 void game_lanzar(unsigned int jugador) {
+	//print_int(MainSystem.jugadores[0].task[0].pos.x, 30, 30, C_FG_WHITE);
+	//print_int(MainSystem.jugadores[0].task[0].pos.y, 31, 31, C_FG_WHITE);
 	#define JUGADOR MainSystem.jugadores[jugador]
 	if (JUGADOR.cantidadVivas < 5) {
 		int i;
@@ -62,7 +64,8 @@ void game_lanzar(unsigned int jugador) {
 		{}
 		if (jugador == 0) {
 			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, JUGADOR.pos);
-			breakpoint();
+			//tarea* tsk = &JUGADOR.task[i];
+			//matarTarea(tsk);
 		} else {
 			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, JUGADOR.pos);
 		}
@@ -145,22 +148,15 @@ void debugMode() {
 	if (MainSystem.debugMode) imprimirError();
 }
 
-
-
-void matarTarea(tarea tsk){
-	// if(tsk->type != H){
-	// 	jugador player = MainSystem.jugadores[MainSystem.taskActual->type];
-	// 	tarea taskVictima = player.task[player.tareaActual];
-	// 	taskVictima.vivo = 0;
-	// 	gdt[taskVictima.gdtEntry].p = 0;
-	// 	if(player.vida != 0){
-	// 		player.vida--;		
-	// 	}
-	// 	player.cantidadVivas--;
-	// } 
-
-	// MainSystem.jugadores[MainSystem.taskActual->viruseada].puntos++;
-
-	// //Como se saltaba a la idle ?	
-	
+void matarTarea(tarea* tsk){
+	if(tsk->type != H){
+		jugador player = MainSystem.jugadores[tsk->type];    	//A o B
+		tsk->vivo = 0;
+		gdt[tsk->gdtEntry].p = 0;
+		if(player.vida != 0){
+			player.vida--;		
+		}
+		player.cantidadVivas--;
+	} 
+	MainSystem.jugadores[tsk->viruseada].puntos--;
 }

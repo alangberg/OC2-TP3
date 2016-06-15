@@ -73,7 +73,6 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 		fisica[j] = codigo[j];
 	}
 	
-	
 	mmu_unmapear_pagina((unsigned int) fisica, rcr3());
 
 	return (unsigned int)page_directory_tareas;
@@ -87,7 +86,6 @@ unsigned int proxima_pagina_libre;
 void mmu_inicializar() {
 	proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
 }
-
 
 unsigned int mmu_proxima_pagina_fisica_libre() {
 	unsigned int pagina_libre = proxima_pagina_libre;

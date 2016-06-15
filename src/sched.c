@@ -61,12 +61,10 @@ unsigned short sched_proximo_indice() {
 		relojH(j);
 		MainSystem.itH = j;
 		MainSystem.taskActual = &(MainSystem.Htask[j]);
-			print_int(MainSystem.taskActual->gdtEntry, 30, 30, C_FG_WHITE);
-			// breakpoint();
+		// breakpoint();
 		return MainSystem.taskActual->gdtEntry;
 	}
 	return 0;
 }
-
 
 //動作するように準備をします

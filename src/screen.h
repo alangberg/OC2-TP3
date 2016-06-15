@@ -45,4 +45,6 @@ void relojH(int i);
 
 void actualizarPantalla();
 
+void imprimirDataJugadores();
+
 #endif  /* !__SCREEN_H__ */

@@ -104,23 +104,24 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 }
 
 void relojJug(int jugador, int i) {
-	char* reloj[4] = {"|","/","-","\\"};
-	int j = (MainSystem.jugadores[jugador].task[i].estadoReloj);
-	if (jugador == 0) print(reloj[j], 10 - 2*i, 46, (0 << 4) | (15 & 0x0F));
+    char* reloj[4] = {"|","/","-","\\"};
+    int j = (MainSystem.jugadores[jugador].task[i].estadoReloj);
+    if (jugador == 0) print(reloj[j], 10 - 2*i, 46, (0 << 4) | (15 & 0x0F));
     else print(reloj[j], 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
     MainSystem.jugadores[jugador].task[i].estadoReloj++;
     if (MainSystem.jugadores[jugador].task[i].estadoReloj == 4) MainSystem.jugadores[jugador].task[i].estadoReloj = 0;
 }
 
 void relojH(int i) {
-	char* reloj[4] = {"|","/","-","\\"};
+    char* reloj[4] = {"|","/","-","\\"};
     int j = (MainSystem.Htask[i].estadoReloj);
-	print(reloj[j], 4 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    print(reloj[j], 4 + 2*i , 48, (0 << 4) | (15 & 0x0F));
     MainSystem.Htask[i].estadoReloj++;
     if (MainSystem.Htask[i].estadoReloj == 4) MainSystem.Htask[i].estadoReloj = 0;
 }
 
 void actualizarPantalla() {
+    imprimirDataJugadores();
     imprimirTareasSanas();
     imprimirTareasJugador(A);
     imprimirTareasJugador(B);
@@ -175,6 +176,15 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
     print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
 
     imprimirTareasSanas();
+}
+
+
+void imprimirDataJugadores(){
+    print_int(MainSystem.jugadores[0].vida, 43, 48, (0 << 4) | (15 & 0x0F));
+    print_int(MainSystem.jugadores[1].vida, 66, 48, (0 << 4) | (15 & 0x0F));
+
+    print_int(MainSystem.jugadores[0].puntos, 51, 47, (4 << 4) | (15 & 0x0F));
+    print_int(MainSystem.jugadores[1].puntos, 58, 47, (1 << 4) | (15 & 0x0F));
 }
 
 void imprimirTareasSanas() {
