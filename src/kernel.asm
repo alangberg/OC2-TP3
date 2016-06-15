@@ -18,6 +18,7 @@ extern habilitar_pic
 extern tss_inicializar_idle
 extern tss_nueva_tarea
 extern game_init
+extern actualizarPantalla
 
 %define PAGE_DIRECTORY_KERNEL   0x27000
 %define PAGE_TABLE_KERNEL		0x28000
@@ -125,6 +126,7 @@ mProtegido:
     or eax, 0x80000000
     mov cr0, eax
 
+
     mov edi, PANTALLA_MAPA
     mov esi, cr3
     mov edx, PANTALLA_MAPA
@@ -132,7 +134,6 @@ mProtegido:
     push esi
     push edi
     call mmu_mapear_pagina
- 
     add esp, 3*4
 
     mov edi, PANTALLA_MAPA
@@ -162,27 +163,25 @@ mProtegido:
     ; Cargar tarea inicial
     mov ax, 0x48
     ltr ax
-
     call game_init
+
     call imprimirJuego
 
-    ; Habilitar interrupciones
+    ; Habilitar interrupcines
     sti
 
     ; Saltar a la primera tarea: Idle
-
+    ; xchg bx, bx
     jmp 0x50:0
-
+    xchg bx, bx
     ;  xor eax, eax
     ;  mov eax, 0x11000
     ;  xor edi, edi
     ;  mov edi, 0x1414
     ;  push edi
     ;  push eax
-    ;  xchg bx, bx
     
     ;  call tss_nueva_tarea
-    ;  xchg bx, bx    
     
 
     ; jmp 0x58:0

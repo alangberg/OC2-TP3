@@ -143,7 +143,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned short)    0x8000,         /* base[0:15]   */  
         (unsigned char)     0x0b,           /* base[23:16]  */
         (unsigned char)     0x03,           /* type         */ //CAPAZ ES OTRO VERDURITA (ACCESED?)
-        (unsigned char)     0x001,          /* s            */
+        (unsigned char)     0x01,           /* s            */
         (unsigned char)     0x00,           /* dpl          */  //Que privilegio tiene el video
         (unsigned char)     0x01,           /* p            */
         (unsigned char)     0x0b,           /* limit[16:19] */
@@ -153,8 +153,8 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x00,           /* g            */
         (unsigned char)     0x00,           /* base[31:24]  */
     }
-    // 8.[GDT_TSS_INICIAL]
-    // 9.[GDT_TSS_IDLE]
+    // 9.[GDT_TSS_INICIAL]
+    // 10.[GDT_TSS_IDLE]
 
 };
 

@@ -20,19 +20,15 @@ void game_mover_cursor(int jugador, direccion dir) {
 		switch (dir) {
 			case ARB:
 				if (MainSystem.jugadores[0].pos.y > 1) MainSystem.jugadores[0].pos.y -= 1;
-				else MainSystem.jugadores[0].pos.y = 44;
 				break;
 			case ABA:
 				if (MainSystem.jugadores[0].pos.y < 44) MainSystem.jugadores[0].pos.y += 1;
-				else MainSystem.jugadores[0].pos.y = 1;
 				break;
 			case DER:
 				 if (MainSystem.jugadores[0].pos.x < 79) MainSystem.jugadores[0].pos.x += 1;
-				 else MainSystem.jugadores[0].pos.x = 0;
 				break;
 			case IZQ:
 				 if (MainSystem.jugadores[0].pos.x > 0) MainSystem.jugadores[0].pos.x -= 1;
-				 else MainSystem.jugadores[0].pos.x = 79;
 				break;
 		}
 		print("*", MainSystem.jugadores[0].pos.x, MainSystem.jugadores[0].pos.y, (4 << 4) | (15 & 0x0F));
@@ -43,19 +39,15 @@ void game_mover_cursor(int jugador, direccion dir) {
 		switch (dir) {
 			case ARB:
 				if (MainSystem.jugadores[1].pos.y > 1) MainSystem.jugadores[1].pos.y -= 1;
-				else MainSystem.jugadores[1].pos.y = 44;
 				break;
 			case ABA:
 				if (MainSystem.jugadores[1].pos.y < 44) MainSystem.jugadores[1].pos.y += 1;
-				else MainSystem.jugadores[1].pos.y = 1;
 				break;
 			case DER:
 				 if (MainSystem.jugadores[1].pos.x < 79) MainSystem.jugadores[1].pos.x += 1;
-				 else MainSystem.jugadores[1].pos.x = 0;
 				break;
 			case IZQ:
 				 if (MainSystem.jugadores[1].pos.x > 0) MainSystem.jugadores[1].pos.x -= 1;
-				 else MainSystem.jugadores[1].pos.x = 79;
 				break;
 		}
 		print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
@@ -63,82 +55,23 @@ void game_mover_cursor(int jugador, direccion dir) {
 }
 
 void game_lanzar(unsigned int jugador) {
-	
-	// posicion pos;
-	// unsigned int* code;
-	// unsigned short* gdtE;
-	// unsigned int* cr3;
-	
-	// if (jugador == 1) {
-	// 	pos = MainSystem.jugadores[0].pos;
-	// 	code = (unsigned int*) 0x11000;
-	// } else {
-	// 	pos = MainSystem.jugadores[1].pos;
-	// 	code = (unsigned int*) 0x12000;
-	// }
-
-	// tss_nueva_tarea(code, pos, gdtE, cr3);
+	#define JUGADOR MainSystem.jugadores[jugador]
+	if (JUGADOR.cantidadVivas < 5) {
+		int i;
+		for (i = 0; i < 5 && JUGADOR.task[i].vivo; i++)
+		{}
+		if (jugador == 0) {
+			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, JUGADOR.pos);
+		} else {
+			JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, JUGADOR.pos);
+			breakpoint();
+		}
+		JUGADOR.cantidadVivas++;
+	}
 }
 
-
-	// if(j == A){
-	// 	codigo = (unsigned int*)CODIGO_TAREA_B;
-	// }else{
-	// 	codigo = (unsigned int*)CODIGO_TAREA_A;
-	// }
-
-	// int i = 0;
-	// while(i < CANT_TAREAS_J && GAME.js[j].tareas[i].vivo){
-	// 	i++;
-	// }
-	
-	// if(i != CANT_TAREAS_J){
-	// 	GAME.js[j].tareas[i] = nueva_tarea(codigo,x,y,j);
-	// 	GAME.js[j].vidas --;
-	// }
-
-
-
-// #define CODIGO_TAREA_B			0x11000
-// #define CODIGO_TAREA_H			0x13000
-// typedef struct str_tarea {
-// 	// Posición de cada tarea dentro del mapa, separada entre jugadores y sanas
-// 	posicion pos;
-// 	tipoTarea type;
-// 	tipoTarea viruseada;
-// 	unsigned short gdtEntry;
-// 	unsigned char vivo; //Para decir si esta viva o no
-// 	unsigned int cr3;	// Posición de cada pagina mapeada por tarea dentro del mapa
-
-// } tarea;
-
-// typedef struct str_jugador {
-// 	posicion pos; // Posición actual de cursor એન્ડી અશ્લીલ
-// 	unsigned int vida; 
-// 	unsigned int puntos;
-// 	unsigned short tareaActual;  
-//  tarea task[5];
-// } jugador;
-
-// typedef struct str_system {
-// 	tarea* taskActual; // Tarea que está siendo actualmente ejecutada // Una forma de acceder a la siguiente tarea
-// 	jugador jugadores[2];		//[jugadorA,jugadorB] એન્ડી અશ્લીલ
-// 	unsigned int jugadorActual;
-// 	unsigned int itH;
-// 	tarea Htask[15];
-
-// 	unsigned short debugMode;
-// } system;
-
-
-
-
-
-
-
-
 void game_soy(unsigned int yoSoy) {
-	if (yoSoy == 0x325){ //Jugador A. A
+	if (yoSoy == 0x325){ //A
 		MainSystem.taskActual->viruseada = A;
 	}
 	if (yoSoy == 0x841) { //B
@@ -156,7 +89,7 @@ void game_mapear(int x, int y) {
 	posAux.x = x;
 	posAux.y = y;
 	unsigned int  fisicaPosicion = game_dame_fisica_de_posicion(posAux);
-	mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion);
+	mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion, 1);
 }
 
 void game_init() {
@@ -180,6 +113,8 @@ void game_init() {
 	for (i = 0; i < 5; i++) {
 		MainSystem.jugadores[0].task[i].vivo = 0;
 		MainSystem.jugadores[1].task[i].vivo = 0;
+		MainSystem.jugadores[0].task[i].estadoReloj = 0;
+		MainSystem.jugadores[1].task[i].estadoReloj = 0;
 	}
 
 	MainSystem.jugadorActual = A;
@@ -199,10 +134,10 @@ tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos) {
 	tNueva.pos = pos;
 	tNueva.type = tipo;
 	tNueva.viruseada = tipo;
-	tNueva.gdtEntry = gdtEntry;
 	tNueva.vivo = 1;
+	tNueva.gdtEntry = gdtEntry;
 	tNueva.cr3 = cr3;
-
+	tNueva.estadoReloj = 0;
 	return tNueva;
 }
 
@@ -212,3 +147,20 @@ void debugMode() {
 
 
 
+void matarTarea(tarea tsk){
+	// if(tsk->type != H){
+	// 	jugador player = MainSystem.jugadores[MainSystem.taskActual->type];
+	// 	tarea taskVictima = player.task[player.tareaActual];
+	// 	taskVictima.vivo = 0;
+	// 	gdt[taskVictima.gdtEntry].p = 0;
+	// 	if(player.vida != 0){
+	// 		player.vida--;		
+	// 	}
+	// 	player.cantidadVivas--;
+	// } 
+
+	// MainSystem.jugadores[MainSystem.taskActual->viruseada].puntos++;
+
+	// //Como se saltaba a la idle ?	
+	
+}

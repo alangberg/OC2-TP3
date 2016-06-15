@@ -25,7 +25,7 @@ extern game_soy
 extern game_donde
 extern game_mapear
 extern debugMode
-
+extern actualizarPantalla
 
 
 ;;Mensajes
@@ -97,6 +97,7 @@ error_msg_len_19 equ    $ - error_msg_19
 global _isr%1
 
 _isr%1:
+
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
     call debugMode
@@ -147,13 +148,15 @@ _isr32:
     pushad
 
     call proximo_reloj
+    call actualizarPantalla
     call sched_proximo_indice
-    
     cmp ax, 0
+
     je  .nojump
         mov [sched_tarea_selector], ax
         call fin_intr_pic1
-        jmp far [sched_tarea_offset] ;FAR?
+        ; xchg bx, bx
+        jmp far [sched_tarea_offset] 
         jmp .end
     
     .nojump:

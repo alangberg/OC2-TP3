@@ -1,4 +1,4 @@
-﻿/* ** por compatibilidad se omiten tildes **
+/* ** por compatibilidad se omiten tildes **
 ================================================================================
  TRABAJO PRACTICO 3 - System Programming - ORGANIZACION DE COMPUTADOR II - FCEN
 ================================================================================
@@ -29,7 +29,7 @@ void task() {
   __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");  __asm __volatile("nop\n");    
   unsigned int x, y, i;
   int pos[2];
-  syscall_donde(pos); 
+  syscall_donde(pos);
   unsigned int* yo = (unsigned int*)(0x08000000);
   unsigned int* otro = (unsigned int*)(0x08000000+0x1000);
   while(1) { 

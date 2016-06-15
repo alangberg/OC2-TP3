@@ -28,6 +28,7 @@ void imprimirTeclado(char codigo) {
             break;
         case 0x2a:
             print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
+            game_lanzar(0);
             break;
         case 0x17:
             print("I", 79, 0, (0 << 4) | (15 & 0x0F));
@@ -47,6 +48,7 @@ void imprimirTeclado(char codigo) {
             break;
         case 0x36:
             print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
+            game_lanzar(1);
             break;
         case 0x15:
             MainSystem.debugMode = !MainSystem.debugMode;
@@ -99,6 +101,29 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     }
     p[y][x].c = '0'+n;
     p[y][x].a = attr;
+}
+
+void relojJug(int jugador, int i) {
+	char* reloj[4] = {"|","/","-","\\"};
+	int j = (MainSystem.jugadores[jugador].task[i].estadoReloj);
+	if (jugador == 0) print(reloj[j], 10 - 2*i, 46, (0 << 4) | (15 & 0x0F));
+    else print(reloj[j], 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
+    MainSystem.jugadores[jugador].task[i].estadoReloj++;
+    if (MainSystem.jugadores[jugador].task[i].estadoReloj == 4) MainSystem.jugadores[jugador].task[i].estadoReloj = 0;
+}
+
+void relojH(int i) {
+	char* reloj[4] = {"|","/","-","\\"};
+    int j = (MainSystem.Htask[i].estadoReloj);
+	print(reloj[j], 4 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    MainSystem.Htask[i].estadoReloj++;
+    if (MainSystem.Htask[i].estadoReloj == 4) MainSystem.Htask[i].estadoReloj = 0;
+}
+
+void actualizarPantalla() {
+    imprimirTareasSanas();
+    imprimirTareasJugador(A);
+    imprimirTareasJugador(B);
 }
 
 // attr = (backcolour << 4) | (forecolour & 0x0F)
@@ -172,15 +197,29 @@ void imprimirTareasSanas() {
 }
 
 void imprimirTareasJugador(tipoTarea j) {
-    // int i;
-    // for(i = 0; i < 5; i++) {
-    //     if(MainSystem.Htask[i].vivo) {
-            
-    //     }
-    // }
+    char* ch;
+    unsigned int k;
+    if (j == A) {
+        ch = "A";
+        k = 0;
+    } else {
+        ch = "B";
+        k = 1;
+    }
+    
+    int i;
+    for(i = 0; i < 5; i++) {
+        if(MainSystem.jugadores[k].task[i].vivo) {
+            print(ch, MainSystem.jugadores[k].task[i].pos.x, MainSystem.jugadores[k].task[i].pos.y, (7 << 4) | (15 & 0x0F));
+        }
+    }
 }
 
 void imprimirError() {
+
+#define printear(r, x, y) print(r, x, y, (7 << 4) | (0 & 0x0F));
+#define printear_hex(r, x, y) print_hex( , x, y, (7 << 4) | (0 & 0x0F));
+
     //ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
 
     int y = 7;
@@ -190,14 +229,14 @@ void imprimirError() {
         else {
             if (y == 8){
                 if (MainSystem.jugadorActual == A) {
-                    print(" ", y, x, (4 << 4));
-                    print("virus A", 8, 25, (4 << 4) | (15 & 0x0F));
+                    print(" ", x, y, (4 << 4));
+                    print("virus A", 25, 8, (4 << 4) | (15 & 0x0F));
                 } else {
                     print(" ", y, x, (1 << 4));
-                    print("virus B", 8, 25, (1 << 4) | (15 & 0x0F));
+                    print("virus B", 25, 8, (1 << 4) | (15 & 0x0F));
                 }
             } else {
-                print(" ", y, x, (7 << 4));
+                print(" ", x, y, (7 << 4));
             }
         }
 
@@ -206,56 +245,54 @@ void imprimirError() {
             x = 24;
         } else x++;
     }
-/*
-    print("eax", 10, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 8, 10, 30, (7 << 4) | (15 & 0x0F))
-    print("ebx", 12, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 12, 30, (7 << 4) | (0 & 0x0F));
-    print("ecx", 14, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 14, 30, (7 << 4) | (0 & 0x0F));
-    print("edx", 16, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 16, 30, (7 << 4) | (0 & 0x0F));
-    print("esi", 18, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 18, 30, (7 << 4) | (0 & 0x0F));
-    print("edi", 20, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 20, 30, (7 << 4) | (0 & 0x0F));
-    print("ebp", 22, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 22, 30, (7 << 4) | (0 & 0x0F));
-    print("esp", 24, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 24, 30, (7 << 4) | (0 & 0x0F));
-    print("eip", 26, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 26, 30, (7 << 4) | (0 & 0x0F));
-    print(" cs", 28, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 28, 30, (7 << 4) | (0 & 0x0F));
-    print(" ds", 30, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 30, 30, (7 << 4) | (0 & 0x0F));
-    print(" es", 32, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 32, 30, (7 << 4) | (0 & 0x0F));
-    print(" fs", 34, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 34, 30, (7 << 4) | (0 & 0x0F));
-    print(" gs", 36, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 36, 30, (7 << 4) | (0 & 0x0F));
-    print(" ss", 38, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 38, 30, (7 << 4) | (0 & 0x0F));
-    print(" eflags", 40, 26, (7 << 4) | (0 & 0x0F));
-    print_hex(, 40, 43, (7 << 4) | (0 & 0x0F));
 
+    // printear("eax", 26, 10);
+    // printear_hex(, 8, 10)
+    // printear("ebx", 12, 26);
+    // printear_hex(, 12, 30);
+    // printear("ecx", 14, 26);
+    // printear_hex(, 14, 30);
+    // printear("edx", 16, 26);
+    // printear_hex(, 16, 30);
+    // printear("esi", 18, 26);
+    // printear_hex(, 18, 30);
+    // printear("edi", 20, 26);
+    // printear_hex(, 20, 30);
+    // printear("ebp", 22, 26);
+    // printear_hex(, 22, 30);
+    // printear("esp", 24, 26);
+    // printear_hex(, 24, 30);
+    // printear("eip", 26, 26);
+    // printear_hex(, 26, 30);
 
-    print("cr0", 10, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 10, 44, (7 << 4) | (0 & 0x0F));
-    print("cr1", 12, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 12, 44, (7 << 4) | (0 & 0x0F));
-    print("cr2", 14, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 14, 44, (7 << 4) | (0 & 0x0F));
-    print("cr3", 16, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 16, 44, (7 << 4) | (0 & 0x0F));
+    // printear(" cs", 28, 26);
+    // printear_hex(, 28, 30);
+    // printear(" ds", 30, 26);
+    // printear_hex(, 30, 30);
+    // printear(" es", 32, 26);
+    // printear_hex(, 32, 30);
+    // printear(" fs", 34, 26);
+    // printear_hex(, 34, 30);
+    // printear(" gs", 36, 26);
+    // printear_hex(, 36, 30);
+    // printear(" ss", 38, 26);
+    // printear_hex(, 38, 30);
+    // printear(" eflags", 40, 26);
+    // printear_hex(, 40, 43);
 
-    print("stack", 26, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 29, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 30, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 31, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 32, 40, (7 << 4) | (0 & 0x0F));
-    print_hex(, 33, 40, (7 << 4) | (0 & 0x0F));
-*/
+    // printear("cr0", 10, 40);
+    // printear_hex(, 10, 44);
+    // printear("cr1", 12, 40);
+    // printear_hex(, 12, 44);
+    // printear("cr2", 14, 40);
+    // printear_hex(, 14, 44);
+    // printear("cr3", 16, 40);
+    // printear_hex(, 16, 44);
 
+    // printear("stack", 26, 40);
+    // printear_hex(, 29, 40);
+    // printear_hex(, 30, 40);
+    // printear_hex(, 31, 40);
+    // printear_hex(, 32, 40);
+    // printear_hex(, 33, 40);
 }

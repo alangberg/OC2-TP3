@@ -37,4 +37,12 @@ void imprimirError();
 
 void imprimirTareasSanas();
 
+void imprimirTareasJugador(tipoTarea j);
+
+void relojJug(int jugador, int i);
+
+void relojH(int i);
+
+void actualizarPantalla();
+
 #endif  /* !__SCREEN_H__ */

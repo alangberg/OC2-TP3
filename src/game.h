@@ -12,7 +12,6 @@
 #include "tss.h"
 
 typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ARB = 0xA33, ABA = 0x883  } direccion;
-typedef enum type_task { H = 0, A = 1, B = 2 } tipoTarea;
 
 typedef struct str_tarea {
 	// Posición de cada tarea dentro del mapa, separada entre jugadores y sanas
@@ -22,6 +21,7 @@ typedef struct str_tarea {
 	unsigned short gdtEntry;
 	unsigned char vivo; 		//Para decir si esta viva o no
 	unsigned int cr3;			// Posición de cada pagina mapeada por tarea dentro del mapa
+	unsigned int estadoReloj;
 
 } tarea;
 
@@ -29,7 +29,8 @@ typedef struct str_jugador {
 	posicion pos; 				// Posición actual de cursor એન્ડી અશ્લીલ
 	unsigned int vida; 
 	unsigned int puntos;
-	unsigned short tareaActual;  
+	unsigned short tareaActual;
+	unsigned short cantidadVivas;
  	tarea task[5];
 } jugador;
 

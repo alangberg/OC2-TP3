@@ -45,7 +45,7 @@ typedef struct str_pte_entry {
 
 void mmu_inicializar();
 void mmu_inicializar_dir_kernel();
-void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica);
+void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica, unsigned char us);
 unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3);
 unsigned int mmu_proxima_pagina_fisica_libre();
 unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos);
