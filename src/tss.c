@@ -32,7 +32,7 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
     tss_nueva->es = (GDT_POSICION_DATA_USER | 0x3);
     tss_nueva->cs = (GDT_POSICION_CODE_USER | 0x3);
     tss_nueva->ss = (GDT_POSICION_DATA_USER | 0x3);
-    tss_nueva->ds = (GDT_POSICION_DATA_USER | 0x3);                     //level 3 datTOTOSs.;
+    tss_nueva->ds = (GDT_POSICION_DATA_USER | 0x3);
     tss_nueva->fs = (GDT_POSICION_DATA_USER | 0x3);
     tss_nueva->gs = (GDT_POSICION_DATA_USER | 0x3);
     //tss_nueva->iomap = 0xFFFF;
@@ -41,19 +41,19 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
     *cr3 = (unsigned int) nuevaCR3;
     
     gdt[i] = (gdt_entry) {
-        (unsigned short)    sizeof(tss)-1,                     /* limit[0:15]  */ 
+        (unsigned short)    sizeof(tss)-1,                          /* limit[0:15]  */ 
         (unsigned short)    (unsigned int) tss_nueva,               /* base[0:15]   */
-        (unsigned char)     ((unsigned int) tss_nueva >> 16),         /* base[23:16]  */
+        (unsigned char)     ((unsigned int) tss_nueva >> 16),       /* base[23:16]  */
         (unsigned char)     0x09,                                   /* type         */
         (unsigned char)     0x00,                                   /* s            */
-        (unsigned char)     0x00, //0x03,                                   /* dpl          */
+        (unsigned char)     0x00,                                   /* dpl          */
         (unsigned char)     0x01,                                   /* p            */
-        (unsigned char)     0x00,//(sizeof(tss)-1) >> 16,                  /* limit[16:19] */
+        (unsigned char)     0x00,//(sizeof(tss)-1) >> 16,           /* limit[16:19] */
         (unsigned char)     0x00,                                   /* avl          */
         (unsigned char)     0x00,                                   /* l            */
         (unsigned char)     0x01,                                   /* db           */
         (unsigned char)     0x00,                                   /* g            */
-        (unsigned char)     ((unsigned int) tss_nueva >> 24),         /* base[31:24]  */
+        (unsigned char)     ((unsigned int) tss_nueva >> 24),       /* base[31:24]  */
     };
 
 }
@@ -68,9 +68,7 @@ unsigned int tarea_gdt_libre(){
 
 
 void tss_inicializar_idle() {
-
-    //tss_idle.esp0 = 0x27000;      //Prox pagina fisica libre
-    //tss_idle.ss0 = GDT_POSICION_DATA_KERNEL;                //SS que use en la gdt
+//seteo campos tss_idle
     tss_idle.cr3 = 0x27000;
     tss_idle.eip = 0x10000;
     tss_idle.eflags = 0x202;

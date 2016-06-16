@@ -157,15 +157,9 @@ mProtegido:
     mov ax, 0x48
     ltr ax
     call game_init
-<<<<<<< HEAD
 
     call imprimirJuego
 
-=======
-
-    call imprimirJuego
-
->>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
     ; Habilitar interrupcines
     sti
 

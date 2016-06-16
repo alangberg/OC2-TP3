@@ -160,7 +160,6 @@ void actualizarPantalla() {
     imprimirTareasSanas();
     imprimirTareasJugador(A);
     imprimirTareasJugador(B);
-    //limpiarTitulo();
 }
 
 // attr = (backcolour << 4) | (forecolour & 0x0F)
@@ -172,7 +171,6 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
     x = 0;
     while (y < 45) { // se podria poner en una linea sola llamando a print    
         print(" ", x, y, (7 << 4) | (0 & 0x0F));
-        
         x++;
         if (x == VIDEO_COLS) {
             x = 0;
@@ -226,13 +224,13 @@ void imprimirTareasSanas() {
         if(MainSystem.Htask[i].vivo) {
             switch (MainSystem.Htask[i].viruseada) {
                 case H:
-                    print("H", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (2 << 4) | (15 & 0x0F));
+                    print("H", MainSystem.Htask[i].posMapa.x, MainSystem.Htask[i].posMapa.y, (2 << 4) | (15 & 0x0F));
                     break;
                 case A:
-                    print("A", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4) | (15 & 0x0F));
+                    print("H", MainSystem.Htask[i].posMapa.x, MainSystem.Htask[i].posMapa.y, (4 << 4) | (15 & 0x0F));
                     break;
                 case B:
-                    print("B", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4) | (15 & 0x0F));
+                    print("H", MainSystem.Htask[i].posMapa.x, MainSystem.Htask[i].posMapa.y, (1 << 4) | (15 & 0x0F));
                    break;
            }
         }
@@ -242,18 +240,21 @@ void imprimirTareasSanas() {
 void imprimirTareasJugador(tipoTarea j) {
     char* ch;
     unsigned int k;
+    int color;
     if (j == A) {
         ch = "A";
         k = 0;
+        color = 4;
     } else {
         ch = "B";
         k = 1;
+        color = 1;
     }
     
     int i;
     for(i = 0; i < 5; i++) {
         if(MainSystem.jugadores[k].task[i].vivo) {
-            print(ch, MainSystem.jugadores[k].task[i].pos.x, MainSystem.jugadores[k].task[i].pos.y, (7 << 4) | (15 & 0x0F));
+            print(ch, MainSystem.jugadores[k].task[i].posMapa.x, MainSystem.jugadores[k].task[i].posMapa.y, (color << 4) | (15 & 0x0F));
         }
     }
 }

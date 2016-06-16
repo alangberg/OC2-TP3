@@ -120,11 +120,11 @@ _isr%1:
     ; push gs
     ; push ss
     ; push eflags
-
+    sti
     call debugMode 
     ;xchg bx, bx
     jmp 0x50:0
-    
+    iret
 %endmacro
 
 

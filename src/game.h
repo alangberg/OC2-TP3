@@ -15,7 +15,8 @@ typedef enum direccion_e { IZQ = 0xAAA, DER = 0x441, ARB = 0xA33, ABA = 0x883  }
 
 typedef struct str_tarea {
 	// Posición de cada tarea dentro del mapa, separada entre jugadores y sanas
-	posicion pos;
+	posicion posMapa;			//Posicion estatica de las tareas.
+	posicion pos;				//Posicion dinamica de las tareas.
 	tipoTarea type;				//"Dueño de la tarea"
 	tipoTarea viruseada;		//Infectada por....
 	unsigned short gdtEntry;	//Indice de la TSS ligada a la tarea
@@ -70,10 +71,6 @@ unsigned int newrand(unsigned int *val);
 
 void sumarPuntos();
 
-<<<<<<< HEAD
 unsigned int noHayNadaMapeadoAca(posicion posAux, tipoTarea j);
-=======
-unsigned int noHayNadaMapeadoAca(posAux, tipoTarea j);
->>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 
 #endif  /* !__GAME_H__ */

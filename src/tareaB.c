@@ -39,7 +39,7 @@ void task() {
   while(1) {
       syscall_soy(0x325);
       x = (newrand(&val) % 79) + 1;
-      y = (newrand(&val) % 43) + 1;
+      y = (newrand(&val) % 42) + 1;
       syscall_mapear(x,y);
       for(i=0;i<1024;i++) otro[i] = yo[i];
   }
