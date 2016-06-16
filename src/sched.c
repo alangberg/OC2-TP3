@@ -12,11 +12,13 @@
 tipoTarea siguienteTarea(tipoTarea actual) {
 	switch (actual) {
 		case A:
-			return B;
+			if (MainSystem.jugadores[1].cantidadVivas > 0) return B;
+			else return H;
 		case B:
 			return H;
 		case H:
-			return A;
+			if (MainSystem.jugadores[0].cantidadVivas > 0) return A;
+			else return B;
 	}
 	return 0;
 }
@@ -42,6 +44,7 @@ unsigned short sched_proximo_indice() {
 		
 		if (i != TAREAS_JUG_SIGUIENTE.tareaActual || TAREAS_JUG_SIGUIENTE.task[i].vivo) {
 			relojJug(k, i);
+			MainSystem.jugadorActual = typeSiguiente;
 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
 			MainSystem.taskActual = &(TAREAS_JUG_SIGUIENTE.task[i]);
 			//breakpoint();
@@ -58,10 +61,10 @@ unsigned short sched_proximo_indice() {
 		if (j > 14) j = 0;
 	}
 	if (j != MainSystem.itH || MainSystem.Htask[j].vivo) {
+		MainSystem.jugadorActual = H;
 		relojH(j);
 		MainSystem.itH = j;
 		MainSystem.taskActual = &(MainSystem.Htask[j]);
-		// breakpoint();
 		return MainSystem.taskActual->gdtEntry;
 	}
 	return 0;

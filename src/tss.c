@@ -63,7 +63,6 @@ unsigned int tarea_gdt_libre(){
     
     unsigned int i = 11;
     while (i < 50 && gdt[i].p == 1) i++;
-
     return i;
 }
 

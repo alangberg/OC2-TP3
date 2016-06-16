@@ -90,11 +90,9 @@ mProtegido:
     mov ax, 0x40
     mov fs, ax
 
-
     ; Establecer la base de la pila
     mov esp, 0x27000    
     mov ebp, esp
-
     
     ; Imprimir mensaje de bienvenida
     imprimir_texto_mp iniciando_mp_msg, iniciando_mp_len, 0x07, 2, 0
@@ -104,11 +102,8 @@ mProtegido:
     mov edi, 10
     mov esi, 10
 
-
     push edi
     push esi
-
-    call imprimirJuego
 
     add esp, 2*4
 
@@ -140,7 +135,7 @@ mProtegido:
     push esi
     push edi
     call mmu_unmapear_pagina
-    
+    add esp, 2*4    
     ; Inicializar tss
     ; Inicializar tss de la tarea Idle
 
@@ -170,20 +165,8 @@ mProtegido:
     sti
 
     ; Saltar a la primera tarea: Idle
-    ; xchg bx, bx
+    
     jmp 0x50:0
-    ;  xor eax, eax
-    ;  mov eax, 0x11000
-    ;  xor edi, edi
-    ;  mov edi, 0x1414
-    ;  push edi
-    ;  push eax
-    
-    ;  call tss_nueva_tarea
-    
-
-    ; jmp 0x58:0
-
     
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

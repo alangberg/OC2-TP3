@@ -22,6 +22,7 @@ typedef struct str_tarea {
 	unsigned char vivo; 		//Para decir si esta viva o no
 	unsigned int cr3;			//Direccion del Page Directory asociado a la tarea
 	unsigned int estadoReloj;	//Clock de la tarea
+	unsigned int posEnArreglo;
 } tarea;
 
 typedef struct str_jugador {
@@ -45,6 +46,8 @@ typedef struct str_system {
 
 extern system MainSystem;
 
+extern unsigned char debugFlag;
+
 void game_lanzar(unsigned int jugador);
 
 void game_soy(unsigned int soy);
@@ -55,12 +58,18 @@ void game_mover_cursor(int jugador, direccion dir);
 
 void game_init();
 
-tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos);
+tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos, unsigned int posEnArreglo);
 
 void debugMode();
 
 void matarTarea();
 
-unsigned int noHayNadaMapeadoAca(posicion pos, tipoTarea t);
+unsigned int contarInfectados(tipoTarea j);
+
+unsigned int newrand(unsigned int *val);
+
+void sumarPuntos();
+
+unsigned int noHayNadaMapeadoAca(posAux, tipoTarea j);
 
 #endif  /* !__GAME_H__ */

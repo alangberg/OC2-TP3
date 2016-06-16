@@ -10,6 +10,7 @@
 #define POS_IGUALES(a, b) a.x == b.x && a.y == b.y
 
 system MainSystem;
+unsigned char debugFlag;
 
 void game_mover_cursor(int jugador, direccion dir) {
 	if (jugador == 1)
@@ -62,38 +63,48 @@ void game_lanzar(unsigned int jugador) {
 		{}
 		if (jugador == 0) {
 			posicion posAux = (posicion) {JUGADOR.pos.x + 1, JUGADOR.pos.y};
-			if (noHayNadaMapeadoAca(posAux, A)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, posAux);
-			//tarea* tsk = &JUGADOR.task[i];
-			//matarTarea(tsk);
+			if (noHayNadaMapeadoAca(posAux, A)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, posAux, i);
 		} else {
 			posicion posAux = (posicion) {JUGADOR.pos.x - 1, JUGADOR.pos.y};
-			if (noHayNadaMapeadoAca(posAux, B)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, posAux);
+			if (noHayNadaMapeadoAca(posAux, B)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, posAux, i);
 		}
 		JUGADOR.cantidadVivas++;
 	}
+	imprimirDataJugadores();
 }
 
-unsigned int noHayNadaMapeadoAca(posicion pos, tipoTarea t) {
+unsigned int noHayNadaMapeadoAca(posAux, tipoTarea j) {
+	int k;
+	if (j == A) k = 0;
+	else k = 1;
+
 	int i;
-	int j;
-	switch (t) {
-		case A:
-			j = 5;
-			for (i = 0; i < j && (MainSystem.jugadores[0].task[i].pos.x != pos.x || MainSystem.jugadores[0].task[i].pos.y != pos.y || !MainSystem.jugadores[0].task[i].vivo); i++)
-			{};
-			break;
-		case B:
-			j = 5;
-			for (i = 0; i < j && (MainSystem.jugadores[1].task[i].pos.x != pos.x || MainSystem.jugadores[1].task[i].pos.y != pos.y || !MainSystem.jugadores[1].task[i].vivo); i++)
-			{};
-			break;
-		case H:
-			j = 15;
-			for (i = 0; i < j && (MainSystem.Htask[i].pos.x != pos.x || MainSystem.Htask[i].pos.y != pos.y || !MainSystem.Htask[i].vivo); i++)
-			{};
-			break;
+	for(i = 0; MainSystem.jugadores[k].task[i].pos.x != posAux.x && MainSystem.jugadores[k].task[i].pos.y != posAux.y; i++) {
 	}
-	return (i == j);
+
+	return (i == 5);
+}
+
+void sumarPuntos(){
+	MainSystem.jugadores[0].puntos = contarInfectados(1);
+	MainSystem.jugadores[1].puntos = contarInfectados(2);
+}
+
+unsigned int contarInfectados(tipoTarea jug) {
+	int i;
+	unsigned int res = 0;
+	for (i = 0; i < 15; i++) {
+		if (MainSystem.Htask[i].viruseada == jug) res++; //sumo las tareas H infectadas por jug
+	}
+	int k;
+		for (k = 0; k < 5; k++) {
+			if(jug == A){
+				res = res + (MainSystem.jugadores[B].task[k].viruseada == jug);
+			}else{
+				res = res + (MainSystem.jugadores[A].task[k].viruseada == jug);
+			}
+		}
+	return res;
 }
 
 void game_soy(unsigned int yoSoy) {
@@ -106,14 +117,15 @@ void game_soy(unsigned int yoSoy) {
 }
 
 void game_donde(unsigned int* pos) {
-	pos[1] = MainSystem.taskActual->pos.x + 1;
-	pos[0] = MainSystem.taskActual->pos.y;
+	pos[0] = MainSystem.taskActual->pos.x;
+	pos[1] = MainSystem.taskActual->pos.y;
 }
 
 void game_mapear(int y, int x) {
 	posicion posAux;
 	posAux.x = x;
 	posAux.y = y;
+	
 	unsigned int  fisicaPosicion = game_dame_fisica_de_posicion(posAux);
 	mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion, 1);
 
@@ -122,6 +134,9 @@ void game_mapear(int y, int x) {
 }
 
 void game_init() {
+
+	debugFlag = 0;
+
 	jugador jA;
 	jA.pos.x = 20;
 	jA.pos.y = 20;
@@ -150,12 +165,24 @@ void game_init() {
 	MainSystem.itH = 0;
 
 	for (i = 0; i < 15; i++) {
-	 	posicion p = {i + 1, i + 1};
-	 	MainSystem.Htask[i] = tareaNueva((unsigned int*) 0x13000, H, p );
+		unsigned int val;
+	 	posicion p = {((newrand(&val) % 79) + 1), ((newrand(&val) % 43) + 1)};
+	 	MainSystem.Htask[i] = tareaNueva((unsigned int*) 0x13000, H, p, i);
 	}
 }
 
-tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos) {
+unsigned int newrand(unsigned int *val) {
+	#define RAND_a 11037981245
+	#define RAND_c 13378
+	#define RAND_m 2147483648LL
+
+    unsigned int rr = RAND_a * ((unsigned int)*val) + RAND_c;
+    *val = (unsigned int) ( rr % RAND_m);
+    return *val;
+}
+
+tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos, unsigned int posEnArreglo) {
+	//breakpoint();
 	tarea tNueva;
 	unsigned short gdtEntry;
 	unsigned int cr3;
@@ -167,25 +194,39 @@ tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos) {
 	tNueva.gdtEntry = gdtEntry;
 	tNueva.cr3 = cr3;
 	tNueva.estadoReloj = 0;
+	tNueva.posEnArreglo = posEnArreglo;
 	return tNueva;
 }
 
 void debugMode() {
-	if (MainSystem.debugMode) imprimirError();
+	if (MainSystem.debugMode) {
+		imprimirError(0);
+		debugFlag = 1;
+	}
 }
 
 void matarTarea() {
+	int j;
+
 	if(MainSystem.taskActual->type != H){
-		int j;
+		
 		if (MainSystem.taskActual->type == A) j = 0;
 		else j = 1;
-		jugador player = MainSystem.jugadores[j];    	//A o B
+		
 		MainSystem.taskActual->vivo = 0;
 		gdt[MainSystem.taskActual->gdtEntry].p = 0;
-		if(player.vida != 0) {
-			player.vida--;
+		
+		if(MainSystem.jugadores[j].vida != 0) {
+			MainSystem.jugadores[j].vida--;
 		}
-		player.cantidadVivas--;
+
+		relojJug(MainSystem.taskActual->type, MainSystem.taskActual->posEnArreglo);
+
+		MainSystem.jugadores[j].cantidadVivas--;
 	}
-	MainSystem.jugadores[MainSystem.taskActual->viruseada].puntos--;
+	if (MainSystem.taskActual->viruseada == A) j = 0;
+	else j = 1;
+	
+	if (MainSystem.jugadores[j].puntos > 0) MainSystem.jugadores[j].puntos--;
+	print(" ", MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
 }

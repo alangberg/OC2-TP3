@@ -27,6 +27,7 @@ extern game_mapear
 extern debugMode
 extern actualizarPantalla
 extern matarTarea
+extern debugFlag
 
 
 ;;Mensajes
@@ -102,7 +103,26 @@ _isr%1:
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
     call matarTarea
-    call debugMode
+
+    ; push eax
+    ; push ebx
+    ; push ecx
+    ; push edx
+    ; push esi
+    ; push edi
+    ; push ebp
+    ; push esp
+    ; push eip
+    ; push cs
+    ; push ds
+    ; push es
+    ; push fs
+    ; push gs
+    ; push ss
+    ; push eflags
+
+    call debugMode 
+    ;xchg bx, bx
     jmp 0x50:0
     
 %endmacro
@@ -150,6 +170,10 @@ _isr32:
     pushad
 
     call proximo_reloj
+
+    cmp byte [debugFlag], 1
+    je .nojump
+
     call actualizarPantalla
     call sched_proximo_indice
     cmp ax, 0

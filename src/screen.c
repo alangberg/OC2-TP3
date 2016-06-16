@@ -8,54 +8,73 @@
 #include "screen.h"
 #include "game.h"
 
+ca* tablaDebug[VIDEO_COLS];
+
 void imprimirTeclado(char codigo) {
-    switch (codigo) {
-        case 0x11:
-            print("W", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0xA33);
-            break;
-        case 0x1e:
-            print("A", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0xAAA);
-            break;
-        case 0x1f:
-            print("S", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0x883);
-            break;
-        case 0x20:
-            print("D", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0x441);
-            break;
-        case 0x2a:
-            print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
-            game_lanzar(0);
-            break;
-        case 0x17:
-            print("I", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0xA33);
-            break;
-        case 0x24:
-            print("J", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0xAAA);
-            break;
-        case 0x25:
-            print("K", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0x883);
-            break;
-        case 0x26:
-            print("L", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0x441);
-            break;
-        case 0x36:
-            print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
-            game_lanzar(1);
-            break;
-        case 0x15:
-            MainSystem.debugMode = !MainSystem.debugMode;
-            break;
-        default:
-            print("      ", 74, 0, (0 << 4));
-            break;
+    if (!debugFlag || codigo == 0x15) {
+        switch (codigo) {
+            case 0x11:
+                print("W", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0xA33);
+                break;
+            case 0x1e:
+                print("A", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0xAAA);
+                break;
+            case 0x1f:
+                print("S", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0x883);
+                break;
+            case 0x20:
+                print("D", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0x441);
+                break;
+            case 0x2a:
+                print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
+                game_lanzar(0);
+                break;
+            case 0x17:
+                print("I", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0xA33);
+                break;
+            case 0x24:
+                print("J", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0xAAA);
+                break;
+            case 0x25:
+                print("K", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0x883);
+                break;
+            case 0x26:
+                print("L", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0x441);
+                break;
+            case 0x36:
+                print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
+                game_lanzar(1);
+                break;
+            case 0x15:
+                MainSystem.debugMode = !MainSystem.debugMode;
+                if (MainSystem.debugMode) print("DEBUG MODE ON", 55, 0, C_FG_WHITE);
+                else {
+                    print("             ", 55, 0, C_FG_WHITE);
+                    if (debugFlag) {
+                        ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+                        
+                        int y;
+                        int x;
+                        
+                        for (y = 7; y < 42; y++) {
+                            for (x = 24; x < 55; x++) p[y][x] = tablaDebug[y - 7][x - 24];
+                        }
+                        debugFlag = 0;
+                    }
+                }
+                break;
+            default:
+                print("      ", 74, 0, (0 << 4));
+                break;
+        }
     }
 }
 
@@ -105,17 +124,33 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 
 void relojJug(int jugador, int i) {
     char* reloj[4] = {"|","/","-","\\"};
-    int j = (MainSystem.jugadores[jugador].task[i].estadoReloj);
-    if (jugador == 0) print(reloj[j], 10 - 2*i, 46, (0 << 4) | (15 & 0x0F));
-    else print(reloj[j], 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
-    MainSystem.jugadores[jugador].task[i].estadoReloj++;
-    if (MainSystem.jugadores[jugador].task[i].estadoReloj == 4) MainSystem.jugadores[jugador].task[i].estadoReloj = 0;
-}
 
+    int j = MainSystem.jugadores[jugador].task[i].estadoReloj;
+
+    if (MainSystem.jugadores[jugador].task[i].vivo == 1){
+
+        if (jugador == 0) print(reloj[j], 10 - 2*i, 46, (0 << 4) | (15 & 0x0F));
+        else print(reloj[j], 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
+
+        MainSystem.jugadores[jugador].task[i].estadoReloj++;
+
+        if (MainSystem.jugadores[jugador].task[i].estadoReloj == 4) MainSystem.jugadores[jugador].task[i].estadoReloj = 0;
+    } else {
+        MainSystem.jugadores[jugador].task[i].estadoReloj = 2;
+        print(" ", 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
+    }
+}
 void relojH(int i) {
     char* reloj[4] = {"|","/","-","\\"};
+
     int j = (MainSystem.Htask[i].estadoReloj);
-    print(reloj[j], 2 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+
+    if (MainSystem.Htask[i].vivo) print(reloj[j], 2 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    else { 
+        MainSystem.Htask[i].estadoReloj = 2;        
+        print(reloj[j], 2 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    }
+
     MainSystem.Htask[i].estadoReloj++;
     if (MainSystem.Htask[i].estadoReloj == 4) MainSystem.Htask[i].estadoReloj = 0;
 }
@@ -125,6 +160,7 @@ void actualizarPantalla() {
     imprimirTareasSanas();
     imprimirTareasJugador(A);
     imprimirTareasJugador(B);
+    //limpiarTitulo();
 }
 
 // attr = (backcolour << 4) | (forecolour & 0x0F)
@@ -163,23 +199,20 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
     print("vidas", 41, 46, (0 << 4) | (15 & 0x0F));
     print("vidas", 64, 46, (0 << 4) | (15 & 0x0F));
 
-    print_int(MainSystem.jugadores[0].vida, 43, 48, (0 << 4) | (15 & 0x0F));
-    print_int(MainSystem.jugadores[1].vida, 66, 48, (0 << 4) | (15 & 0x0F));
-
-    print_int(MainSystem.jugadores[0].puntos, 51, 47, (4 << 4) | (15 & 0x0F));
-    print_int(MainSystem.jugadores[1].puntos, 58, 47, (1 << 4) | (15 & 0x0F));
+    imprimirDataJugadores();
 
     print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
     print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
 
     print("*", MainSystem.jugadores[0].pos.x, MainSystem.jugadores[0].pos.y, (4 << 4) | (15 & 0x0F));
     print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
-
+    print("El que no llora no mama", 28, 0, (0 << 4) | (15 & 0x0F));
     imprimirTareasSanas();
 }
 
 
 void imprimirDataJugadores() {
+    sumarPuntos();
     print_int(MainSystem.jugadores[0].vida, 43, 48, (0 << 4) | (15 & 0x0F));
     print_int(MainSystem.jugadores[1].vida, 66, 48, (0 << 4) | (15 & 0x0F));
 
@@ -224,26 +257,40 @@ void imprimirTareasJugador(tipoTarea j) {
         }
     }
 }
-
-
-void imprimirError() {
+/*
+void limpiarTitulo(){
+    int i;
+    for (i = 0; i < 20; i++)
+    {
+        print(" ", i, 0, 0);
+    }
+    //print("nombregrupo", 0, 40, (0 << 4) | (15 & 0x0F));
+}
+*/
+void imprimirError(unsigned int* registros) {   
 
 #define printear(r, x, y) print(r, x, y, (7 << 4) | (0 & 0x0F));
-#define printear_hex(r, x, y) print_hex( , x, y, (7 << 4) | (0 & 0x0F));
+#define printear_hex(r, x, y) print_hex( r, 8, x, y, (7 << 4) | (0 & 0x0F));
 
-    //ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
 
-    int y = 7;
-    int x = 24;
+    int y;
+    int x;
+    for (y = 7; y < 42; y++) {
+        for (x = 24; x < 55; x++) tablaDebug[y - 7][x - 24] = p[y][x];
+    }
+
+    y = 7;
+    x = 24;
     while (y < 42) {
-        if (y == 7 || y == 41 || x == 24 || x == 53) print(" ", y, x, 0);
+        if (y == 7 || y == 41 || x == 24 || x == 54) print(" ", x, y    , 0);
         else {
             if (y == 8){
                 if (MainSystem.jugadorActual == A) {
                     print(" ", x, y, (4 << 4));
                     print("virus A", 25, 8, (4 << 4) | (15 & 0x0F));
                 } else {
-                    print(" ", y, x, (1 << 4));
+                    print(" ", x, y, (1 << 4));
                     print("virus B", 25, 8, (1 << 4) | (15 & 0x0F));
                 }
             } else {
@@ -258,9 +305,10 @@ void imprimirError() {
     }
 
     // printear("eax", 26, 10);
-    // printear_hex(, 8, 10)
-    // printear("ebx", 12, 26);
-    // printear_hex(, 12, 30);
+    // i = leerRegistro("eax");
+    // printear_hex("ebx", 8, 10);
+    // i = leerRegistro("ebx");
+    // printear_hex(i, 12, 30);
     // printear("ecx", 14, 26);
     // printear_hex(, 14, 30);
     // printear("edx", 16, 26);
