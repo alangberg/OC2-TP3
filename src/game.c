@@ -240,7 +240,7 @@ void matarTarea() {
 	}
 
 	MainSystem.taskActual->vivo = 0;
-	gdt[(MainSystem.taskActual->gdtEntry) >> 3].p = 0;
+	// gdt[(MainSystem.taskActual->gdtEntry) >> 3].p = 0;
 
 	if (MainSystem.taskActual->viruseada == A) j = 0;
 	else j = 1;

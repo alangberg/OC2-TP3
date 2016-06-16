@@ -99,29 +99,15 @@ error_msg_len_19 equ    $ - error_msg_19
 global _isr%1
 
 _isr%1:
+    sti
 
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
+
     call matarTarea
 
-    ; push eax
-    ; push ebx
-    ; push ecx
-    ; push edx
-    ; push esi
-    ; push edi
-    ; push ebp
-    ; push esp
-    ; push eip
-    ; push cs
-    ; push ds
-    ; push es
-    ; push fs
-    ; push gs
-    ; push ss
-    ; push eflags
-    sti
     call debugMode 
+    
     ;xchg bx, bx
     jmp 0x50:0
     iret
@@ -244,7 +230,7 @@ _isr102:
     pop ecx
 
 .fin:
-    call fin_intr_pic1
+    ;call fin_intr_pic1
     
     pop ebx
     jmp 0x50:0
