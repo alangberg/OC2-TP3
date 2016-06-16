@@ -21,6 +21,8 @@ typedef struct ca_s {
     unsigned char a;
 } ca;
 
+extern ca* tablaDebug[VIDEO_COLS];
+
 extern unsigned char systemClock;
 
 void print(const char * text, unsigned int x, unsigned int y, unsigned short attr);
@@ -32,5 +34,21 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
 void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2);
 
 void imprimirTeclado(char codigo);
+
+void imprimirError(unsigned int* registros);
+
+void imprimirTareasSanas();
+
+void imprimirTareasJugador(tipoTarea j);
+
+void relojJug(int jugador, int i);
+
+void relojH(int i);
+
+void actualizarPantalla();
+
+void imprimirDataJugadores();
+
+//void limpiarTitulo();
 
 #endif  /* !__SCREEN_H__ */

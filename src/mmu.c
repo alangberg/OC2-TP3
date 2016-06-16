@@ -6,6 +6,7 @@
 */
 
 #include "mmu.h"
+#include "screen.h"
 
 //Macros
 #define PDE_INDEX(virtual) virtual >> 22
@@ -29,31 +30,47 @@ void mmu_inicializar_dir_kernel(){
 	}
 }
 
+unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 
-
-unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos){
-
-	int* page_directory_tareas = (int*) mmu_proxima_pagina_fisica_libre();
-	page_directory_tareas[0] = (int) (page_directory_tareas + 0x3);
+	pde_entry* page_directory_tareas = (pde_entry*) mmu_proxima_pagina_fisica_libre();
 	int i;
-	for (i = 1; i < 1024; ++i) {
-		page_directory_tareas[i]= 0x0;
+	for (i = 0; i < 1024; i++) {
+	    page_directory_tareas[i].present = 0;
+	    page_directory_tareas[i].rw = 0;
+	    page_directory_tareas[i].us = 0;
+	    page_directory_tareas[i].pwt = 0;
+	    page_directory_tareas[i].pcd = 0;
+	    page_directory_tareas[i].a = 0;
+	    page_directory_tareas[i].d = 0;
+	    page_directory_tareas[i].pat = 0;        
+	    page_directory_tareas[i].g = 0;
+	    page_directory_tareas[i].disponible = 0;
+	    page_directory_tareas[i].base = 0;
+	}
+	page_directory_tareas[0].present = 1;
+	page_directory_tareas[0].rw = 1;
+	
+	pte_entry* page_table_tareas = (pte_entry*) mmu_proxima_pagina_fisica_libre();	
+
+	for (i = 0; i < 1024; i++) {
+		page_table_tareas[i].present = 1;
+		page_table_tareas[i].rw = 1;
+		page_table_tareas[i].us = 1;
+		page_table_tareas[i].base = (unsigned int) i;  // = ((i << 12) | 3)
 	}
 
-	int* page_table_tareas = (int*) mmu_proxima_pagina_fisica_libre();
-	for (i = 0; i < 1024; ++i) {
-		page_table_tareas[i] = ((i << 12) | 3);
-	}
+	page_directory_tareas[0].base = (unsigned int) page_table_tareas >> 12;
 
-	unsigned int* fisica = (unsigned int*) game_dame_fisica_de_posicion(pos);
+	unsigned int* fisica =  (unsigned int*) game_dame_fisica_de_posicion(pos);
 
-	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica);
+	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica, 1);
 
-	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica);
+	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica, 0);
+
 	int j;
-	for (j = 0; j < 1024; ++j)
-	{
-		fisica[i] = codigo[i];
+	//unsigned int* DireccionVirtual = (unsigned int*) DIR_VIRTUAL_TAREA;
+	for (j = 0; j < 1024; j++) {
+		fisica[j] = codigo[j];
 	}
 	
 	mmu_unmapear_pagina((unsigned int) fisica, rcr3());
@@ -70,7 +87,6 @@ void mmu_inicializar() {
 	proxima_pagina_libre = INICIO_PAGINAS_LIBRES;
 }
 
-
 unsigned int mmu_proxima_pagina_fisica_libre() {
 	unsigned int pagina_libre = proxima_pagina_libre;
 	proxima_pagina_libre += PAGE_SIZE;
@@ -79,7 +95,7 @@ unsigned int mmu_proxima_pagina_fisica_libre() {
 
 /*Mapea la pagina fisica a la marco de pagina virtual en el esquema
 de paginacion cr3.*/
-void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica) {
+void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica, unsigned char us) {
 	// Agarro los 1ros 20bits de la CR3 que corresponden a la direccion base del directorio de paginas
 	pde_entry* CR3 = (pde_entry*)(cr3 & 0xFFFFF000);
 
@@ -88,27 +104,30 @@ void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisi
 	// si PRESENT es 0
 	if (!(PDE->present)) {
 		// pongo la dir en 0
-		PDE->base = mmu_proxima_pagina_fisica_libre();
+		PDE->base = mmu_proxima_pagina_fisica_libre() >> 12;
 		// la igualo con el resultado de la funcion (me da un numero de 32bits donde los primeros 12 son 0s asi que esta todo re piolanga)
 		// le pongo en 1 el PRESENT y el RW como dice la diapo
 		PDE->present = 1;
 		PDE->rw = 1;
-
+		PDE->us = us;
 		// dejo el resto de la tabla en 0
+		pte_entry* pte_indice = (pte_entry*) ((PDE->base) << 12);
+		
 		int i;
-		pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
-		for (i = 1; i < 1024; i++) {
+		for (i = 0; i < 1024; i++) {
 			pte_indice[i].present = 0;
+			pte_indice[i].us = 0;
 		}
 	}
 
-	pte_entry* a = (pte_entry*) ((PDE->base)<<12);
-
+	pte_entry* a = (pte_entry*) ((PDE->base) << 12);
 	pte_entry* PTE = (pte_entry*) &(a[PTE_INDEX(virtual)]);
 
-	PTE->base = fisica;
+	PTE->base = fisica >> 12;
 	PTE->present = 1;
 	PTE->rw = 1;
+	PTE->us = us;
+
 	tlbflush();
 }
 
@@ -123,6 +142,7 @@ unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	pte_entry* pte_indice = (pte_entry*) ((PDE->base)<<12);
 
 	PTE->present = 0;
+	PTE->us = 0;
 
 	int check_noHayNadie = 1;
 	int i;
@@ -139,3 +159,4 @@ unsigned int mmu_unmapear_pagina(unsigned int virtual, unsigned int cr3) {
 	tlbflush();
 	return cr3;
 }
+

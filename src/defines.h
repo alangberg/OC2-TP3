@@ -27,6 +27,7 @@
 #define PAGE_SIZE				0x1000
 #define INICIO_PAGINAS_LIBRES	0x100000
 #define DIR_VIRTUAL_TAREA		0x8000000
+#define PAGINA_MAPEADA		    0x8001000
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
@@ -45,14 +46,12 @@
 #define GDT_TSS_INICIAL	        	 9
 #define GDT_TSS_IDLE	        	 10
 
-#define GDT_POSICION_CODE_KERNEL	0x20
-#define GDT_POSICION_DATA_KERNEL	0x28
-#define GDT_POSICION_CODE_USER		0x30
+#define GDT_POSICION_CODE_KERNEL	GDT_0_CODE_KERNEL << 3
+#define GDT_POSICION_DATA_KERNEL	GDT_0_DATA_KERNEL << 3
+#define GDT_POSICION_CODE_USER		0x30	
 #define GDT_POSICION_DATA_USER		0x38
 #define GDT_POSICION_TSS_INICIAL	0x48
 #define GDT_POSICION_TSS_IDLE		0x50
-
-
 
 
 /* Offsets en la gdt */
@@ -63,4 +62,10 @@
 /* -------------------------------------------------------------------------- */
 #define VIDEO_SCREEN            0x000B8000 /* direccion fisica del buffer de video */
 
+typedef struct str_pos {
+	unsigned char x;
+	unsigned char y;
+} posicion;
+
+typedef enum type_task { H = 0, A = 1, B = 2 } tipoTarea;
 #endif  /* !__DEFINES_H__ */

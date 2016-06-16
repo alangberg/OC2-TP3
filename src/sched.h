@@ -12,6 +12,10 @@
 #include "tss.h"
 #include "gdt.h"
 
+#define CANT_TAREAS 25
+
+extern unsigned short sch_tareas[CANT_TAREAS];
+
 unsigned short sched_proximo_indice();
 
 

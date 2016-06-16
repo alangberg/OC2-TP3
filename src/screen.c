@@ -6,50 +6,75 @@
 */
 
 #include "screen.h"
+#include "game.h"
+
+ca* tablaDebug[VIDEO_COLS];
 
 void imprimirTeclado(char codigo) {
-    switch (codigo) {
-        case 0x11:
-            print("W", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0xA33);
-            break;
-        case 0x1e:
-            print("A", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0xAAA);
-            break;
-        case 0x1f:
-            print("S", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0x883);
-            break;
-        case 0x20:
-            print("D", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(1, 0x441);
-            break;
-        case 0x2a:
-            print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
-            break;
-        case 0x17:
-            print("I", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0xA33);
-            break;
-        case 0x24:
-            print("J", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0xAAA);
-            break;
-        case 0x25:
-            print("K", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0x883);
-            break;
-        case 0x26:
-            print("L", 79, 0, (0 << 4) | (15 & 0x0F));
-            game_mover_cursor(2, 0x441);
-            break;
-        case 0x36:
-            print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
-            break;
-        default:
-            print("      ", 74, 0, (0 << 4));
-            break;
+    if (!debugFlag || codigo == 0x15) {
+        switch (codigo) {
+            case 0x11:
+                print("W", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0xA33);
+                break;
+            case 0x1e:
+                print("A", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0xAAA);
+                break;
+            case 0x1f:
+                print("S", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0x883);
+                break;
+            case 0x20:
+                print("D", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(1, 0x441);
+                break;
+            case 0x2a:
+                print("LShift", 74, 0, (0 << 4) | (15 & 0x0F));
+                game_lanzar(0);
+                break;
+            case 0x17:
+                print("I", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0xA33);
+                break;
+            case 0x24:
+                print("J", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0xAAA);
+                break;
+            case 0x25:
+                print("K", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0x883);
+                break;
+            case 0x26:
+                print("L", 79, 0, (0 << 4) | (15 & 0x0F));
+                game_mover_cursor(2, 0x441);
+                break;
+            case 0x36:
+                print("RShift", 74, 0, (0 << 4) | (15 & 0x0F));
+                game_lanzar(1);
+                break;
+            case 0x15:
+                MainSystem.debugMode = !MainSystem.debugMode;
+                if (MainSystem.debugMode) print("DEBUG MODE ON", 55, 0, C_FG_WHITE);
+                else {
+                    print("             ", 55, 0, C_FG_WHITE);
+                    if (debugFlag) {
+                        ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+                        
+                        int y;
+                        int x;
+                        
+                        for (y = 7; y < 42; y++) {
+                            for (x = 24; x < 55; x++) p[y][x] = tablaDebug[y - 7][x - 24];
+                        }
+                        debugFlag = 0;
+                    }
+                }
+                break;
+            default:
+                print("      ", 74, 0, (0 << 4));
+                break;
+        }
     }
 }
 
@@ -97,9 +122,48 @@ void print_int(unsigned int n, unsigned int x, unsigned int y, unsigned short at
     p[y][x].a = attr;
 }
 
+void relojJug(int jugador, int i) {
+    char* reloj[4] = {"|","/","-","\\"};
+
+    int j = MainSystem.jugadores[jugador].task[i].estadoReloj;
+
+    if (MainSystem.jugadores[jugador].task[i].vivo == 1){
+
+        if (jugador == 0) print(reloj[j], 10 - 2*i, 46, (0 << 4) | (15 & 0x0F));
+        else print(reloj[j], 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
+
+        MainSystem.jugadores[jugador].task[i].estadoReloj++;
+
+        if (MainSystem.jugadores[jugador].task[i].estadoReloj == 4) MainSystem.jugadores[jugador].task[i].estadoReloj = 0;
+    } else {
+        MainSystem.jugadores[jugador].task[i].estadoReloj = 2;
+        print(" ", 22 + 2*i, 46, (0 << 4) | (15 & 0x0F));
+    }
+}
+void relojH(int i) {
+    char* reloj[4] = {"|","/","-","\\"};
+
+    int j = (MainSystem.Htask[i].estadoReloj);
+
+    if (MainSystem.Htask[i].vivo) print(reloj[j], 2 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    else { 
+        MainSystem.Htask[i].estadoReloj = 2;        
+        print(reloj[j], 2 + 2*i , 48, (0 << 4) | (15 & 0x0F));
+    }
+
+    MainSystem.Htask[i].estadoReloj++;
+    if (MainSystem.Htask[i].estadoReloj == 4) MainSystem.Htask[i].estadoReloj = 0;
+}
+
+void actualizarPantalla() {
+    imprimirDataJugadores();
+    imprimirTareasSanas();
+    imprimirTareasJugador(A);
+    imprimirTareasJugador(B);
+    //limpiarTitulo();
+}
+
 // attr = (backcolour << 4) | (forecolour & 0x0F)
-
-
 void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2) {
     int x;
     for (x = 0; x < 160; x++) print(" ", x, 0, 0);
@@ -132,29 +196,162 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
         }
     }
 
-    jR.pos.x = 20;
-    jR.pos.y = 20;
-    
-    jR.vida = 15;
-
-    jA.pos.x = 50;
-    jA.pos.y = 20;
-
-    jA.vida = 15;
-
     print("vidas", 41, 46, (0 << 4) | (15 & 0x0F));
     print("vidas", 64, 46, (0 << 4) | (15 & 0x0F));
 
-    print_int(jR.vida, 43, 48, (0 << 4) | (15 & 0x0F));
-    print_int(jA.vida, 66, 48, (0 << 4) | (15 & 0x0F));
-
-    print_int(jR.puntos, 51, 47, (4 << 4) | (15 & 0x0F));
-    print_int(jA.puntos, 58, 47, (1 << 4) | (15 & 0x0F));
+    imprimirDataJugadores();
 
     print("<A", 12, 46, (0 << 4) | (15 & 0x0F));
     print("B>", 19, 46, (0 << 4) | (15 & 0x0F));
 
-    print("*", jR.pos.x, jR.pos.y, (4 << 4) | (15 & 0x0F));
-    print("*", jA.pos.x, jA.pos.y, (1 << 4) | (15 & 0x0F));
+    print("*", MainSystem.jugadores[0].pos.x, MainSystem.jugadores[0].pos.y, (4 << 4) | (15 & 0x0F));
+    print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
+    print("El que no llora no mama", 28, 0, (0 << 4) | (15 & 0x0F));
+    imprimirTareasSanas();
 }
 
+
+void imprimirDataJugadores() {
+    sumarPuntos();
+    print_int(MainSystem.jugadores[0].vida, 43, 48, (0 << 4) | (15 & 0x0F));
+    print_int(MainSystem.jugadores[1].vida, 66, 48, (0 << 4) | (15 & 0x0F));
+
+    print_int(MainSystem.jugadores[0].puntos, 51, 47, (4 << 4) | (15 & 0x0F));
+    print_int(MainSystem.jugadores[1].puntos, 58, 47, (1 << 4) | (15 & 0x0F));
+}
+
+void imprimirTareasSanas() {
+    int i;
+    for(i = 0; i < 15; i++) {
+        if(MainSystem.Htask[i].vivo) {
+            switch (MainSystem.Htask[i].viruseada) {
+                case H:
+                    print("H", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (2 << 4) | (15 & 0x0F));
+                    break;
+                case A:
+                    print("A", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (4 << 4) | (15 & 0x0F));
+                    break;
+                case B:
+                    print("B", MainSystem.Htask[i].pos.x, MainSystem.Htask[i].pos.y, (1 << 4) | (15 & 0x0F));
+                   break;
+           }
+        }
+    }
+}
+
+void imprimirTareasJugador(tipoTarea j) {
+    char* ch;
+    unsigned int k;
+    if (j == A) {
+        ch = "A";
+        k = 0;
+    } else {
+        ch = "B";
+        k = 1;
+    }
+    
+    int i;
+    for(i = 0; i < 5; i++) {
+        if(MainSystem.jugadores[k].task[i].vivo) {
+            print(ch, MainSystem.jugadores[k].task[i].pos.x, MainSystem.jugadores[k].task[i].pos.y, (7 << 4) | (15 & 0x0F));
+        }
+    }
+}
+/*
+void limpiarTitulo(){
+    int i;
+    for (i = 0; i < 20; i++)
+    {
+        print(" ", i, 0, 0);
+    }
+    //print("nombregrupo", 0, 40, (0 << 4) | (15 & 0x0F));
+}
+*/
+void imprimirError(unsigned int* registros) {   
+
+#define printear(r, x, y) print(r, x, y, (7 << 4) | (0 & 0x0F));
+#define printear_hex(r, x, y) print_hex( r, 8, x, y, (7 << 4) | (0 & 0x0F));
+
+    ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
+
+    int y;
+    int x;
+    for (y = 7; y < 42; y++) {
+        for (x = 24; x < 55; x++) tablaDebug[y - 7][x - 24] = p[y][x];
+    }
+
+    y = 7;
+    x = 24;
+    while (y < 42) {
+        if (y == 7 || y == 41 || x == 24 || x == 54) print(" ", x, y    , 0);
+        else {
+            if (y == 8){
+                if (MainSystem.jugadorActual == A) {
+                    print(" ", x, y, (4 << 4));
+                    print("virus A", 25, 8, (4 << 4) | (15 & 0x0F));
+                } else {
+                    print(" ", x, y, (1 << 4));
+                    print("virus B", 25, 8, (1 << 4) | (15 & 0x0F));
+                }
+            } else {
+                print(" ", x, y, (7 << 4));
+            }
+        }
+
+        if (x == 54) {
+            y++;
+            x = 24;
+        } else x++;
+    }
+
+    // printear("eax", 26, 10);
+    // i = leerRegistro("eax");
+    // printear_hex("ebx", 8, 10);
+    // i = leerRegistro("ebx");
+    // printear_hex(i, 12, 30);
+    // printear("ecx", 14, 26);
+    // printear_hex(, 14, 30);
+    // printear("edx", 16, 26);
+    // printear_hex(, 16, 30);
+    // printear("esi", 18, 26);
+    // printear_hex(, 18, 30);
+    // printear("edi", 20, 26);
+    // printear_hex(, 20, 30);
+    // printear("ebp", 22, 26);
+    // printear_hex(, 22, 30);
+    // printear("esp", 24, 26);
+    // printear_hex(, 24, 30);
+    // printear("eip", 26, 26);
+    // printear_hex(, 26, 30);
+
+    // printear(" cs", 28, 26);
+    // printear_hex(, 28, 30);
+    // printear(" ds", 30, 26);
+    // printear_hex(, 30, 30);
+    // printear(" es", 32, 26);
+    // printear_hex(, 32, 30);
+    // printear(" fs", 34, 26);
+    // printear_hex(, 34, 30);
+    // printear(" gs", 36, 26);
+    // printear_hex(, 36, 30);
+    // printear(" ss", 38, 26);
+    // printear_hex(, 38, 30);
+    // printear(" eflags", 40, 26);
+    // printear_hex(, 40, 43);
+
+    // printear("cr0", 10, 40);
+    // printear_hex(, 10, 44);
+    // printear("cr1", 12, 40);
+    // printear_hex(, 12, 44);
+    // printear("cr2", 14, 40);
+    // printear_hex(, 14, 44);
+    // printear("cr3", 16, 40);
+    // printear_hex(, 16, 44);
+
+    // printear("stack", 26, 40);
+    // printear_hex(, 29, 40);
+    // printear_hex(, 30, 40);
+    // printear_hex(, 31, 40);
+    // printear_hex(, 32, 40);
+    // printear_hex(, 33, 40);
+}

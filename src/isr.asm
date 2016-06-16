@@ -19,6 +19,15 @@ extern fin_intr_pic1
 ;; Sched
 extern sched_proximo_indice
 
+;; Game
+
+extern game_soy
+extern game_donde
+extern game_mapear
+extern debugMode
+extern actualizarPantalla
+extern matarTarea
+extern debugFlag
 
 
 ;;Mensajes
@@ -90,9 +99,31 @@ error_msg_len_19 equ    $ - error_msg_19
 global _isr%1
 
 _isr%1:
+
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
-    jmp $
+    call matarTarea
+
+    ; push eax
+    ; push ebx
+    ; push ecx
+    ; push edx
+    ; push esi
+    ; push edi
+    ; push ebp
+    ; push esp
+    ; push eip
+    ; push cs
+    ; push ds
+    ; push es
+    ; push fs
+    ; push gs
+    ; push ss
+    ; push eflags
+
+    call debugMode 
+    ;xchg bx, bx
+    jmp 0x50:0
     
 %endmacro
 
@@ -137,8 +168,26 @@ global _isr32
 
 _isr32:
     pushad
-    call fin_intr_pic1
+
     call proximo_reloj
+
+    cmp byte [debugFlag], 1
+    je .nojump
+
+    call actualizarPantalla
+    call sched_proximo_indice
+    cmp ax, 0
+
+    je  .nojump
+        mov [sched_tarea_selector], ax
+        call fin_intr_pic1
+
+        jmp far [sched_tarea_offset] 
+        jmp .end
+    
+    .nojump:
+    call fin_intr_pic1
+    .end:
     popad
 iret
 
@@ -174,27 +223,46 @@ global _isr102
 
 _isr102:
     pushad
+    push ebx
+    
+    cmp eax, DONDE
+    jne .soy
+.donde:
+    call game_donde
+    jmp .fin
+
+.soy:
+    cmp eax, SOY
+    jne .mapear
+
+    call game_soy
+    jmp .fin
+
+.mapear:
+    push ecx
+    call game_mapear
+    pop ecx
+
+.fin:
     call fin_intr_pic1
     
-    mov eax, 0x42
-    mov [ebp-24], eax
+    pop ebx
+    jmp 0x50:0
     popad
-iret
+    iret
 
 ;; Funciones Auxiliares
 ;; -------------------------------------------------------------------------- ;;
 proximo_reloj:
-        pushad
-        inc DWORD [isrnumero]
-        mov ebx, [isrnumero]
-        cmp ebx, 0x4
-        jl .ok
-                mov DWORD [isrnumero], 0x0
-                mov ebx, 0
-        .ok:
-                add ebx, isrClock
-                imprimir_texto_mp ebx, 1, 0x0f, 49, 79
-                popad
-        ret
-        
-        
+    pushad
+    inc DWORD [isrnumero]
+    mov ebx, [isrnumero]
+    cmp ebx, 0x4
+    jl .ok
+            mov DWORD [isrnumero], 0x0
+            mov ebx, 0
+    .ok:
+            add ebx, isrClock
+            imprimir_texto_mp ebx, 1, 0x0f, 49, 79
+            popad
+    ret
