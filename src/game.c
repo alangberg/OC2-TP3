@@ -63,6 +63,7 @@ void game_lanzar(unsigned int jugador) {
 		{}
 		if (jugador == 0) {
 			posicion posAux = (posicion) {JUGADOR.pos.x + 1, JUGADOR.pos.y};
+<<<<<<< HEAD
 			if (noHayNadaMapeadoAca(posAux, A)) {
 				JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, posAux, i);
 				JUGADOR.cantidadVivas++;
@@ -74,25 +75,46 @@ void game_lanzar(unsigned int jugador) {
 				JUGADOR.cantidadVivas++;
 			}
 		}
+=======
+			if (noHayNadaMapeadoAca(posAux, A)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, posAux, i);
+		} else {
+			posicion posAux = (posicion) {JUGADOR.pos.x - 1, JUGADOR.pos.y};
+			if (noHayNadaMapeadoAca(posAux, B)) JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, posAux, i);
+		}
+		JUGADOR.cantidadVivas++;
+>>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 	}
 	imprimirDataJugadores();
 }
 
+<<<<<<< HEAD
 unsigned int noHayNadaMapeadoAca(posicion posAux, tipoTarea j) {
+=======
+unsigned int noHayNadaMapeadoAca(posAux, tipoTarea j) {
+>>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 	int k;
 	if (j == A) k = 0;
 	else k = 1;
 
 	int i;
+<<<<<<< HEAD
 	for(i = 0; i < 5 && MainSystem.jugadores[k].task[i].pos.x != posAux.x && MainSystem.jugadores[k].task[i].pos.y != posAux.y; i++) {
+=======
+	for(i = 0; MainSystem.jugadores[k].task[i].pos.x != posAux.x && MainSystem.jugadores[k].task[i].pos.y != posAux.y; i++) {
+>>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 	}
 
 	return (i == 5);
 }
 
 void sumarPuntos(){
+<<<<<<< HEAD
 	MainSystem.jugadores[0].puntos = contarInfectados(A);
 	MainSystem.jugadores[1].puntos = contarInfectados(B);
+=======
+	MainSystem.jugadores[0].puntos = contarInfectados(1);
+	MainSystem.jugadores[1].puntos = contarInfectados(2);
+>>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 }
 
 unsigned int contarInfectados(tipoTarea jug) {
@@ -104,9 +126,15 @@ unsigned int contarInfectados(tipoTarea jug) {
 	int k;
 		for (k = 0; k < 5; k++) {
 			if(jug == A){
+<<<<<<< HEAD
 				res = res + (MainSystem.jugadores[1].task[k].viruseada == jug);
 			} else {
 				res = res + (MainSystem.jugadores[0].task[k].viruseada == jug);
+=======
+				res = res + (MainSystem.jugadores[B].task[k].viruseada == jug);
+			}else{
+				res = res + (MainSystem.jugadores[A].task[k].viruseada == jug);
+>>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 			}
 		}
 	return res;

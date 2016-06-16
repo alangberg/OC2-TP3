@@ -70,6 +70,10 @@ unsigned int newrand(unsigned int *val);
 
 void sumarPuntos();
 
+<<<<<<< HEAD
 unsigned int noHayNadaMapeadoAca(posicion posAux, tipoTarea j);
+=======
+unsigned int noHayNadaMapeadoAca(posAux, tipoTarea j);
+>>>>>>> 657d50e43fe462d9f84fe0645ed9cf2f25346f60
 
 #endif  /* !__GAME_H__ */
