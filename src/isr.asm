@@ -110,7 +110,6 @@ _isr%1:
     
     ;xchg bx, bx
     jmp 0x50:0
-    iret
 %endmacro
 
 

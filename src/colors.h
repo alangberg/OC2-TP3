@@ -15,7 +15,7 @@
 #define C_FG_LIGHT_BLUE         (0x9)
 #define C_FG_LIGHT_GREEN        (0xA)
 #define C_FG_LIGHT_CYAN         (0xB)
-#define C_FG_LIGHT_RED          (0xC) //cero ce
+#define C_FG_LIGHT_RED          (0xC)
 #define C_FG_LIGHT_MAGENTA      (0xD)
 #define C_FG_LIGHT_BROWN        (0xE)
 #define C_FG_WHITE              (0xF)

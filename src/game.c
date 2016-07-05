@@ -197,7 +197,6 @@ unsigned int newrand(unsigned int *val) {
 }
 
 tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos, unsigned int posEnArreglo) {
-	//breakpoint();
 	tarea tNueva;
 	unsigned short gdtEntry;
 	unsigned int cr3;
@@ -216,7 +215,7 @@ tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos, unsigned in
 
 void debugMode() {
 	if (MainSystem.debugMode) {
-		imprimirError(0);
+		imprimirError();
 		debugFlag = 1;
 	}
 }

@@ -27,7 +27,7 @@ typedef struct str_tarea {
 } tarea;
 
 typedef struct str_jugador {
-	posicion pos; 					//Posición actual de cursor એન્ડી અશ્લીલ
+	posicion pos; 					//Posición actual de cursor
 	unsigned int vida; 				//Vidas restantes	
 	unsigned int puntos;			//Puntaje actual
 	unsigned short tareaActual;		//Tarea actual corriendo.

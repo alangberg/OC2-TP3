@@ -35,7 +35,7 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
 void imprimirTeclado(char codigo);
 
-void imprimirError(unsigned int* registros);
+void imprimirError();
 
 void imprimirTareasSanas();
 
@@ -49,6 +49,6 @@ void actualizarPantalla();
 
 void imprimirDataJugadores();
 
-//void limpiarTitulo();
+void printRegisters();
 
 #endif  /* !__SCREEN_H__ */
