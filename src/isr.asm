@@ -98,20 +98,45 @@ error_msg_len_19 equ    $ - error_msg_19
 %macro ISR 1
 global _isr%1
 
-_isr%1:
-    sti
+_isr%1: 
+
+
+        push eax
+        push ebx
+        push ecx
+        push edx
+        push esi
+        push edi
+        push ebp
+        push esp
+        push ds
+        push es
+        push fs
+        push gs
+
+        call debugMode
+
+        pop gs
+        pop fs
+        pop es
+        pop ds
+        pop esp
+        pop ebp
+        pop edi
+        pop esi
+        pop edx
+        pop ecx
+        pop ebx
+        pop eax
 
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
 
-    call matarTarea
-
-    call debugMode 
+    call matarTarea 
     
-    ;xchg bx, bx
-    jmp 0x50:0
+    jmp 0x50:00
+    jmp $
 %endmacro
-
 
 ;;
 ;; Datos
@@ -180,7 +205,7 @@ iret
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
 
-global _isr33
+ global _isr33
 
 _isr33:
     pushad

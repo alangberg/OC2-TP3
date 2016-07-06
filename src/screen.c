@@ -58,13 +58,13 @@ void imprimirTeclado(char codigo) {
                 if (MainSystem.debugMode) print("DEBUG MODE ON", 55, 0, C_FG_WHITE);
                 else {
                     print("             ", 55, 0, C_FG_WHITE);
-                    if (debugFlag) {
+                    if (debugFlag){
                         ca (*p)[VIDEO_COLS] = (ca (*)[VIDEO_COLS]) VIDEO_SCREEN;
                         
                         int y;
                         int x;
                         
-                        for (y = 7; y < 42; y++) {
+                        for (y = 7; y < 43; y++) {
                             for (x = 24; x < 55; x++) p[y][x] = tablaDebug[y - 7][x - 24];
                         }
                         debugFlag = 0;
@@ -162,14 +162,13 @@ void actualizarPantalla() {
     imprimirTareasJugador(B);
 }
 
-// attr = (backcolour << 4) | (forecolour & 0x0F)
 void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2) {
     int x;
-    for (x = 0; x < 160; x++) print(" ", x, 0, 0);
+    for (x = 0; x < 160; x++) print(" ", x, 0, 0);  //Pintamos el marco superior en negro
 
     int y = 1;
     x = 0;
-    while (y < 45) { // se podria poner en una linea sola llamando a print    
+    while (y < 45) { // Se Pinta la pantalla de Gris    
         print(" ", x, y, (7 << 4) | (0 & 0x0F));
         x++;
         if (x == VIDEO_COLS) {
@@ -178,13 +177,13 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
         }
     }
 
-    while (y < 50) {
+    while (y < 50) { //Pinto barra inferior
         if (x > 47 && x < 55) {
-            print(" ", x, y, (4 << 4) | (0 & 0x0F)); // aca pinto todo de rojo para el P1
+            print(" ", x, y, (4 << 4) | (0 & 0x0F)); // Pinto todo de rojo para el P1
         } else if (x > 54 && x < 62) {
-            print(" ", x, y, (1 << 4) | (0 & 0x0F)); // aca pinto todo de azul para el P2
+            print(" ", x, y, (1 << 4) | (0 & 0x0F)); // Pinto todo de azul para el P2
         } else {
-            print(" ", x, y, 0); // si no va todo en negro
+            print(" ", x, y, 0); // Si no es de ningún jugador, pinto en negro
         }
 
         x++;
@@ -260,8 +259,8 @@ void imprimirTareasJugador(tipoTarea j) {
 }
 
 
- 
-void imprimirError() {   
+
+void imprimirError(int gs, int fs, int es, int ds, int esp, int ebp, int edi, int esi, int edx, int ecx, int ebx, int eax, int errorCode, int eip, int cs, int eflags, int espTss,  int ss) {   
 
 #define printear(r, x, y) print(r, x, y, (7 << 4) | (0 & 0x0F));
 #define printear_hex(r, x, y) print_hex( r, 8, x, y, (7 << 4) | (0 & 0x0F));
@@ -271,7 +270,7 @@ void imprimirError() {
     int y;
     int x;
     for (y = 7; y < 43; y++) {
-        for (x = 24; x < 55; x++) tablaDebug[y - 7][x - 24] = p[y][x];
+        for (x = 24; x < 55; x++) tablaDebug[y - 8][x - 24] = p[y][x];
     }
 
     y = 7;
@@ -298,69 +297,62 @@ void imprimirError() {
             x = 24;
         } else x++;
     }
-
-    printRegisters();
+    printRegisters(gs, fs, es, ds, esp, ebp, edi, esi, edx, ecx, ebx, eax, errorCode, eip, cs, eflags, espTss, ss);
 }
 
 
 
 
-void printRegisters(){
-	gdt_entry entradaGDT = gdt[MainSystem.taskActual->gdtEntry >> 3];
-	unsigned short base15_0 = entradaGDT.base_0_15;
-	unsigned char base23_16 = entradaGDT.base_23_16;
-	unsigned char base31_24 = entradaGDT.base_31_24;
+void printRegisters(int gs, int fs, int es, int ds, int esp, int ebp, int edi, int esi, int edx, int ecx, int ebx, int eax, int errorCode, int eip, int cs, int eflags, int espTss, int ss){	
 
-	tss* base = (tss*)(base15_0 | (base23_16 << 16) | (base31_24 << 24));
-	
-	
+    unsigned int* Cesp = (unsigned int*) esp;
     print("eax", 26, 10, (7 << 4) | (0 & 0x0F));
-	print_hex(base->eax, 8, 30, 10, (7 << 4) | (15 & 0x0F));
+	print_hex(eax, 8, 30, 10, (7 << 4) | (15 & 0x0F));
 
     print("ebx", 26, 12, (7 << 4) | (0 & 0x0F));
-	print_hex(base->ebx, 8, 30, 12, (7 << 4) | (15 & 0x0F));
+	print_hex(ebx, 8, 30, 12, (7 << 4) | (15 & 0x0F));
 
 	print("ecx", 26, 14, (7 << 4) | (0 & 0x0F));
-	print_hex(base->ecx, 8, 30, 14, (7 << 4) | (15 & 0x0F));
+	print_hex(ecx, 8, 30, 14, (7 << 4) | (15 & 0x0F));
 
     print("edx", 26, 16, (7 << 4) | (0 & 0x0F));
-	print_hex(base->edx, 8, 30, 16, (7 << 4) | (15 & 0x0F));
+	print_hex(edx, 8, 30, 16, (7 << 4) | (15 & 0x0F));
 
     print("esi", 26, 18, (7 << 4) | (0 & 0x0F));
-	print_hex(base->esi, 8, 30, 18, (7 << 4) | (15 & 0x0F));
+	print_hex(esi, 8, 30, 18, (7 << 4) | (15 & 0x0F));
 
     print("edi", 26, 20, (7 << 4) | (0 & 0x0f));
-	print_hex(base->edi, 8, 30, 20, (7 << 4) | (15 & 0x0F));
+	print_hex(edi, 8, 30, 20, (7 << 4) | (15 & 0x0F));
 
     print("ebp", 26, 22, (7 << 4) | (0 & 0x0f));
-	print_hex(base->ebp, 8, 30, 22, (7 << 4) | (15 & 0x0F));
+	print_hex(ebp, 8, 30, 22, (7 << 4) | (15 & 0x0F));
 
     print("esp", 26, 24, (7 << 4) | (0 & 0x0f));
-	print_hex(base->esp, 8, 30, 24, (7 << 4) | (15 & 0x0F));
+	print_hex(esp, 8, 30, 24, (7 << 4) | (15 & 0x0F));
 	
-	print("eip", 26, 26, (7 << 4) | (0 & 0x0f));
-	print_hex(base->eip, 8, 30, 26, (7 << 4) | (15 & 0x0F));
+    print("eip", 26, 26, (7 << 4) | (0 & 0x0f));
+	print_hex(eip, 8, 30, 26, (7 << 4) | (15 & 0x0F));
 
     print("cs", 27, 28, (7 << 4) | (0 & 0x0f));
-	print_hex(base->cs, 4, 30, 28, (7 << 4) | (15 & 0x0F));
-
+	print_hex(cs, 4, 30, 28, (7 << 4) | (15 & 0x0F));
+	
 	print("ds", 27, 30, (7 << 4) | (0 & 0x0f));
-	print_hex(base->ds, 4, 30, 30, (7 << 4) | (15 & 0x0F));
+	print_hex(ds, 4, 30, 30, (7 << 4) | (15 & 0x0F));
 
 	print("es", 27, 32, (7 << 4) | (0 & 0x0f));
-	print_hex(base->es, 4, 30, 32, (7 << 4) | (15 & 0x0F));
+	print_hex(es, 4, 30, 32, (7 << 4) | (15 & 0x0F));
 
 	print("fs", 27, 34, (7 << 4) | (0 & 0x0f));
-	print_hex(base->fs, 4, 30, 34, (7 << 4) | (15 & 0x0F));
+	print_hex(fs, 4, 30, 34, (7 << 4) | (15 & 0x0F));
 
 	print("gs", 27, 36, (7 << 4) | (0 & 0x0f));
-	print_hex(base->gs, 4, 30, 36, (7 << 4) | (15 & 0x0F));
+	print_hex(gs, 4, 30, 36, (7 << 4) | (15 & 0x0F));
 	
 	print("ss", 27, 38, (7 << 4) | (0 & 0x0f));
-	print_hex(base->ds, 4, 30, 38, (7 << 4) | (15 & 0x0F));
+	print_hex(ss, 4, 30, 38, (7 << 4) | (15 & 0x0F));
 	
 	print("eflags", 27, 40, (7 << 4) | (0 & 0x0f));
-	print_hex(base->eflags, 8, 33, 40, (7 << 4) | (15 & 0x0F));
+	print_hex(eflags, 8, 33, 40, (7 << 4) | (15 & 0x0F));
 
 	print("cr0", 40, 10, (7 << 4) | (0 & 0x0F));
 	print_hex(rcr0(), 8, 44, 10, (7 << 4) | (15 & 0x0F));
@@ -369,7 +361,7 @@ void printRegisters(){
 	print_hex(rcr2(), 8, 44, 12, (7 << 4) | (15 & 0x0F));
 
 	print("cr3", 40, 14, (7 << 4) | (0 & 0x0F));
-	print_hex(MainSystem.taskActual->cr3 , 8, 44, 14, (7 << 4) | (15 & 0x0F));
+	print_hex(rcr3() , 8, 44, 14, (7 << 4) | (15 & 0x0F));
 
 	print("cr4", 40, 16, (7 << 4) | (0 & 0x0F));
 	print_hex(rcr4(), 8, 44, 16, (7 << 4) | (15 & 0x0F));
@@ -377,8 +369,8 @@ void printRegisters(){
 	print("stack", 40, 27, (7 << 4) | (0 & 0x0f));
 
 	int i;
-	for (i = 0; i < 4 && ((base->esp+i) < base->ebp); i++){
-		print_hex((*(unsigned int*)(base->esp + i)), 8, 40, (30+i), (7 << 4) | (15 & 0x0F));
-	}
+	 for (i = 0; i < 4 && (esp+i)<ebp ; i++){
+	 	print_hex((*(Cesp + i)), 8, 40, (30+i), (7 << 4) | (15 & 0x0F));
+	 }
 
 }

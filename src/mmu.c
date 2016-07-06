@@ -68,9 +68,8 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 	mmu_mapear_pagina((unsigned int) fisica, rcr3(), (unsigned int) fisica, 0);
 
 	int j;
-	//unsigned int* DireccionVirtual = (unsigned int*) DIR_VIRTUAL_TAREA;
 	for (j = 0; j < 1024; j++) {
-		fisica[j] = codigo[j];
+		fisica[j] = codigo [j];
 	}
 	
 	mmu_unmapear_pagina((unsigned int) fisica, rcr3());

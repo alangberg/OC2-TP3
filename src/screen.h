@@ -35,7 +35,7 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
 void imprimirTeclado(char codigo);
 
-void imprimirError();
+void imprimirError(int gs, int fs, int es, int ds, int esp, int ebp, int edi, int esi, int edx, int ecx, int ebx, int eax, int errorCode, int eip, int cs, int eflags, int espTss,  int ss);   
 
 void imprimirTareasSanas();
 
@@ -49,6 +49,6 @@ void actualizarPantalla();
 
 void imprimirDataJugadores();
 
-void printRegisters();
+void printRegisters(int gs, int fs, int es, int ds, int esp, int ebp, int edi, int esi, int edx, int ecx, int ebx, int eax, int errorCode, int eip, int cs, int eflags, int espTss, int ss);	
 
 #endif  /* !__SCREEN_H__ */
