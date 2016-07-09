@@ -136,8 +136,6 @@ _isr%1:
     
     jmp 0x50:0
 
-    xchg bx, bx
-    
     jmp $
 %endmacro
 

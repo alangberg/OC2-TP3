@@ -143,10 +143,6 @@ mProtegido:
 
     ; Inicializar el scheduler
 
-    call game_init
-    call imprimirJuego
-    
-
     ; Inicializar la IDT
     call idt_inicializar
     
@@ -160,7 +156,9 @@ mProtegido:
     ; Cargar tarea inicial
     mov ax, 0x48
     ltr ax
+    call game_init
 
+    call imprimirJuego
 
     ; Habilitar interrupcines
     sti

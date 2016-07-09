@@ -106,6 +106,9 @@ void game_soy(unsigned int yoSoy) {
 	}
 }
 
+
+
+
 void game_donde(short* pos) {
 
 	// tenemos q chequear q el puntero este en la pag virtual de la tarea
@@ -183,10 +186,7 @@ void game_init() {
 	 	posicion p = {((newrand(&val) % 79) + 1), ((newrand(&val) % 43) + 1)};
 	 	MainSystem.Htask[i] = tareaNueva((unsigned int*) 0x13000, H, p, i);
 	}
-
-	MainSystem.idle = 1;
 }
-
 
 unsigned int newrand(unsigned int *val) {
 	#define RAND_a 11037981245
@@ -242,7 +242,6 @@ void matarTarea() {
 	}
 
 	MainSystem.taskActual->vivo = 0;
-
 
 	if (MainSystem.taskActual->viruseada == A) j = 0;
 	else j = 1;
