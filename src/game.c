@@ -59,36 +59,22 @@ void game_lanzar(unsigned int jugador) {
 	#define JUGADOR MainSystem.jugadores[jugador]
 	if (JUGADOR.cantidadVivas < 5) {
 		int i;
-		for (i = 0; i < 5 && JUGADOR.task[i].vivo; i++)
-		{}
+		for (i = 0; i < 5 && JUGADOR.task[i].vivo; i++){}
 		if (jugador == 0) {
-			posicion posAux = (posicion) {JUGADOR.pos.x, JUGADOR.pos.y};
-			 // if (noHayNadaMapeadoAca(posAux, A)) {
+				posicion posAux = (posicion) {JUGADOR.pos.x, JUGADOR.pos.y};
+
 				JUGADOR.task[i] = tareaNueva((unsigned int*) 0x11000, A, posAux, i);
 				JUGADOR.cantidadVivas++;
-			 // }
 		} else {
-			posicion posAux = (posicion) {JUGADOR.pos.x, JUGADOR.pos.y};
-			 // if (noHayNadaMapeadoAca(posAux, B)) {
+				posicion posAux = (posicion) {JUGADOR.pos.x, JUGADOR.pos.y};
+				
 				JUGADOR.task[i] = tareaNueva((unsigned int*) 0x12000, B, posAux, i);
 				JUGADOR.cantidadVivas++;
-			 // }
 		}
 	}
 	imprimirDataJugadores();
 }
 
-unsigned int noHayNadaMapeadoAca(posicion posAux, tipoTarea j) {
-	int k;
-	if (j == A) k = 0;
-	else k = 1;
-
-	int i;
-	for(i = 0; i < 5 && MainSystem.jugadores[k].task[i].pos.x != posAux.x && MainSystem.jugadores[k].task[i].pos.y != posAux.y; i++) {
-	}
-
-	return (i == 5);
-}
 
 void sumarPuntos(){
 	MainSystem.jugadores[0].puntos = contarInfectados(A);
@@ -111,40 +97,54 @@ unsigned int contarInfectados(tipoTarea jug) {
 		}
 	return res;
 }
-
+	
 void game_soy(unsigned int yoSoy) {
 	if (yoSoy == 0x841){ //A
 		MainSystem.taskActual->viruseada = A;
-	}
-	if (yoSoy == 0x325) { //B
+	} else if (yoSoy == 0x325) { //B
 		MainSystem.taskActual->viruseada = B;
 	}
 }
 
-void game_donde(unsigned int* pos) {
-	if (MainSystem.taskActual->type != H){
-		pos[0] = MainSystem.taskActual->pos.x;
-		pos[1] = MainSystem.taskActual->pos.y;
+void game_donde(short* pos) {
+
+	// tenemos q chequear q el puntero este en la pag virtual de la tarea
+	if((unsigned int) pos < DIR_VIRTUAL_TAREA || (unsigned int)pos + (sizeof(short)*2) > DIR_VIRTUAL_TAREA + PAGE_SIZE - 1){
+		matarTarea();	
 	} else {
-		pos[0] = MainSystem.taskActual->posMapa.x;
-		pos[1] = MainSystem.taskActual->posMapa.y;
+		if (MainSystem.taskActual->type != H){
+			pos[0] = MainSystem.taskActual->pos.x;
+			pos[1] = MainSystem.taskActual->pos.y ; //- 1 ?;
+		} else {
+			pos[0] = MainSystem.taskActual->posMapa.x;
+			pos[1] = MainSystem.taskActual->posMapa.y;// - 1?;
+		}
+		//if (pos[1] == 0) breakpoint();
 	}
 }
 
-void game_mapear(int y, int x) {
+void game_mapear(int x, int y) {
+
 	posicion posAux;
 	posAux.x = x;
 	posAux.y = y;
 
-	unsigned int  fisicaPosicion = game_dame_fisica_de_posicion(posAux);
-	mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion, 1);
+	if ((x < 80) && (y > 1) && (y < 45)){
+		unsigned int  fisicaPosicion = game_dame_fisica_de_posicion(posAux);
 
-	print(" ", MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
-	MainSystem.taskActual->pos = posAux;
-	char* ch;
-	if (MainSystem.taskActual->viruseada == A) ch = "A";
-	else ch = "B";
-	print(ch, MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
+		mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion, 1);
+
+		print(" ", MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
+		MainSystem.taskActual->pos = posAux;
+		char* ch;
+		if (MainSystem.taskActual->viruseada == A) ch = "A";
+		else ch = "B";
+		print(ch, MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
+
+	} else {
+		matarTarea();
+	}
+
 }
 
 void game_init() {
@@ -181,10 +181,12 @@ void game_init() {
 	for (i = 0; i < 15; i++) {
 		unsigned int val;
 	 	posicion p = {((newrand(&val) % 79) + 1), ((newrand(&val) % 43) + 1)};
-	 	// posicion p = {i+1,i+1};
 	 	MainSystem.Htask[i] = tareaNueva((unsigned int*) 0x13000, H, p, i);
 	}
+
+	MainSystem.idle = 1;
 }
+
 
 unsigned int newrand(unsigned int *val) {
 	#define RAND_a 11037981245
@@ -210,6 +212,7 @@ tarea tareaNueva(unsigned int* codigo, tipoTarea tipo, posicion pos, unsigned in
 	tNueva.cr3 = cr3;
 	tNueva.estadoReloj = 0;
 	tNueva.posEnArreglo = posEnArreglo;
+
 	return tNueva;
 }
 
@@ -239,7 +242,7 @@ void matarTarea() {
 	}
 
 	MainSystem.taskActual->vivo = 0;
-	// gdt[(MainSystem.taskActual->gdtEntry) >> 3].p = 0;
+
 
 	if (MainSystem.taskActual->viruseada == A) j = 0;
 	else j = 1;

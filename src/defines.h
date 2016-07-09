@@ -63,8 +63,8 @@
 #define VIDEO_SCREEN            0x000B8000 /* direccion fisica del buffer de video */
 
 typedef struct str_pos {
-	unsigned char x;
-	unsigned char y;
+	unsigned short x;
+	unsigned short y;
 } posicion;
 
 typedef enum type_task { H = 0, A = 1, B = 2 } tipoTarea;

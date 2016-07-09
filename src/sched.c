@@ -14,20 +14,43 @@ tipoTarea siguienteTarea(tipoTarea actual) {
 		case A:
 			if (MainSystem.jugadores[1].cantidadVivas > 0) return B;
 			else return H;
+			return B;
 		case B:
 			return H;
 		case H:
 			if (MainSystem.jugadores[0].cantidadVivas > 0) return A;
-			else return B;
+			else return A;
 	}
 	return 0;
+}
+
+
+ 
+unsigned short tieneVivos(tipoTarea type){
+	unsigned short tiene = 0;
+	int j;
+
+	if(type == A) j = 0;
+	else j = 1;
+
+	if(type != H){
+		tiene = MainSystem.jugadores[j].cantidadVivas > 0;
+	} else {
+		int i = 0;
+		while(!tiene && i < 15){
+			tiene = MainSystem.Htask[i].vivo;
+		}
+	}
+
+	return tiene;
 }
 
  
 unsigned short sched_proximo_indice() {
 	#define TAREAS_JUG_SIGUIENTE MainSystem.jugadores[k]
-	
-	tipoTarea typeSiguiente = siguienteTarea(MainSystem.taskActual->type);
+	if(tieneVivos(A) || tieneVivos(B) || tieneVivos(H)){
+	tipoTarea typeSiguiente = siguienteTarea(MainSystem.jugadorActual);
+
 	if (typeSiguiente != H) {
 		int i;
 		int k;
@@ -68,6 +91,15 @@ unsigned short sched_proximo_indice() {
 		return MainSystem.taskActual->gdtEntry;
 	}
 	return 0;
+} else {
+
+	if(MainSystem.idle){
+		return 0x50;
+	}
+
+	return 0;
 }
 
-//動作するように準備をします
+
+
+}

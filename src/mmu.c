@@ -31,8 +31,8 @@ void mmu_inicializar_dir_kernel(){
 }
 
 unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
-
 	pde_entry* page_directory_tareas = (pde_entry*) mmu_proxima_pagina_fisica_libre();
+
 	int i;
 	for (i = 0; i < 1024; i++) {
 	    page_directory_tareas[i].present = 0;
@@ -51,8 +51,8 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 	page_directory_tareas[0].rw = 1;
 	
 	pte_entry* page_table_tareas = (pte_entry*) mmu_proxima_pagina_fisica_libre();	
-
 	for (i = 0; i < 1024; i++) {
+	
 		page_table_tareas[i].present = 1;
 		page_table_tareas[i].rw = 1;
 		page_table_tareas[i].us = 1;
@@ -60,7 +60,7 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 	}
 
 	page_directory_tareas[0].base = (unsigned int) page_table_tareas >> 12;
-
+	
 	unsigned int* fisica =  (unsigned int*) game_dame_fisica_de_posicion(pos);
 
 	mmu_mapear_pagina(DIR_VIRTUAL_TAREA, (unsigned int) page_directory_tareas, (unsigned int) fisica, 1);
@@ -69,7 +69,7 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 
 	int j;
 	for (j = 0; j < 1024; j++) {
-		fisica[j] = codigo [j];
+		fisica[j] = codigo[j];
 	}
 	
 	mmu_unmapear_pagina((unsigned int) fisica, rcr3());
@@ -77,8 +77,10 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 	return (unsigned int)page_directory_tareas;
 }
 
+
+
 unsigned int game_dame_fisica_de_posicion(posicion pos) {
-	return (0x400000 + (pos.y*80 + pos.x)*0x8000);
+	return (0x400000 + (pos.y*80 + pos.x)*0x1000); //NICO LO CAMBIE QUE ONDA
 }
 
 unsigned int proxima_pagina_libre;
@@ -96,14 +98,16 @@ unsigned int mmu_proxima_pagina_fisica_libre() {
 de paginacion cr3.*/
 void mmu_mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica, unsigned char us) {
 	// Agarro los 1ros 20bits de la CR3 que corresponden a la direccion base del directorio de paginas
+	
 	pde_entry* CR3 = (pde_entry*)(cr3 & 0xFFFFF000);
 
 	pde_entry* PDE = &(CR3[PDE_INDEX(virtual)]);
 
 	// si PRESENT es 0
 	if (!(PDE->present)) {
-		// pongo la dir en 0
+		// pongo la dir 0
 		PDE->base = mmu_proxima_pagina_fisica_libre() >> 12;
+
 		// la igualo con el resultado de la funcion (me da un numero de 32bits donde los primeros 12 son 0s asi que esta todo re piolanga)
 		// le pongo en 1 el PRESENT y el RW como dice la diapo
 		PDE->present = 1;

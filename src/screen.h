@@ -51,4 +51,6 @@ void imprimirDataJugadores();
 
 void printRegisters(int gs, int fs, int es, int ds, int esp, int ebp, int edi, int esi, int edx, int ecx, int ebx, int eax, int errorCode, int eip, int cs, int eflags, int espTss, int ss);	
 
+void tirameEsteNumero(unsigned int n);
+
 #endif  /* !__SCREEN_H__ */

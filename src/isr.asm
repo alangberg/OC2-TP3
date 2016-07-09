@@ -129,12 +129,15 @@ _isr%1:
         pop ebx
         pop eax
 
+    call matarTarea
+
     mov eax, %1
     imprimir_texto_mp error_msg_%1, error_msg_len_%1, 0x04, 0, 0
-
-    call matarTarea 
     
-    jmp 0x50:00
+    jmp 0x50:0
+
+    xchg bx, bx
+    
     jmp $
 %endmacro
 
@@ -233,31 +236,36 @@ global _isr102
 
 _isr102:
     pushad
-    push ebx
+    
     
     cmp eax, DONDE
     jne .soy
 .donde:
+    push ebx
     call game_donde
+    pop ebx
     jmp .fin
 
 .soy:
     cmp eax, SOY
     jne .mapear
 
+    push ebx
     call game_soy
+    pop ebx
     jmp .fin
 
 .mapear:
     push ecx
+    push ebx
     call game_mapear
+    pop ebx
     pop ecx
 
 .fin:
-    ;call fin_intr_pic1
-    
-    pop ebx
+
     jmp 0x50:0
+    
     popad
     iret
 

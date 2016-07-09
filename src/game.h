@@ -41,6 +41,7 @@ typedef struct str_system {
 	unsigned int jugadorActual;		// 0 == H; 1 == A; 2 == B
 	unsigned int itH;				// iterador al arreglo de tareas H. 
 	tarea Htask[15];
+	unsigned short idle;
 
 	unsigned short debugMode;
 } system;
@@ -53,7 +54,7 @@ void game_lanzar(unsigned int jugador);
 
 void game_soy(unsigned int soy);
 
-void game_donde(unsigned int* pos);
+void game_donde(short* pos);
 
 void game_mover_cursor(int jugador, direccion dir);
 
@@ -71,6 +72,179 @@ unsigned int newrand(unsigned int *val);
 
 void sumarPuntos();
 
-unsigned int noHayNadaMapeadoAca(posicion posAux, tipoTarea j);
+// unsigned int noHayNadaMapeadoAca(posicion posAux, tipoTarea j);
 
 #endif  /* !__GAME_H__ */
+
+
+
+
+
+
+
+
+
+// tipoTarea siguienteTarea(tipoTarea actual) {
+// 	switch (actual) {
+// 		case A:
+// 			//if (MainSystem.jugadores[1].cantidadVivas > 0) return B;
+// 			//else return H;
+// 			return B;
+// 		case B:
+// 			return H;
+// 		case H:
+// 			//if (MainSystem.jugadores[0].cantidadVivas > 0) return A;
+// 			//else return B;
+// 		return A;
+// 	}
+// 	return 0;
+// }
+
+
+
+// unsigned char tieneVivos(tipoTarea type){
+// 	unsigned char tiene = 0;
+// 	int i = 0;
+// 	int k;
+// 	if(type != H){
+// 		if(type == A) k = 0;
+// 		else k = 1;
+// 		int actual = (MainSystem.jugadores[k].tareaActual + 1) % 5;		
+
+// 		while( tiene == 0 || i < 5){
+// 			tiene = MainSystem.jugadores[k].task[(actual + i) % 5].vivo; 
+// 			i++;
+// 		}
+// 	} else {
+// 		int actual = (MainSystem.itH + 1) % 15;
+
+// 		while( tiene == 0 || i < 15){
+// 			tiene = MainSystem.Htask[(actual + i) % 15].vivo; 
+// 			i++;
+// 		}
+// 	}
+
+// 	return tiene;
+
+// }
+
+ 
+// unsigned short sched_proximo_indice() {
+// 	#define TAREAS_JUG_SIGUIENTE MainSystem.jugadores[k]
+	
+// 	tipoTarea typeSiguiente = siguienteTarea(MainSystem.taskActual->type);
+
+
+// 	if(tieneVivos(typeSiguiente)){
+// 		if (typeSiguiente != H){
+// 			int i;
+// 			int k;
+// 			if (typeSiguiente == A) k = 0; //[jugadorA, jugadorB]
+// 			else k = 1;
+
+// 			i = (TAREAS_JUG_SIGUIENTE.tareaActual + 1) % 5;
+
+// 			while (!TAREAS_JUG_SIGUIENTE.task[i].vivo){
+// 					i = (i + 1) % 5;
+// 			}
+
+// 			relojJug(k, i);
+// 			MainSystem.jugadorActual = typeSiguiente;
+// 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
+// 			MainSystem.taskActual = &(TAREAS_JUG_SIGUIENTE.task[i]);
+// 			return MainSystem.taskActual->gdtEntry;
+// 		}
+
+// 		int j;
+// 		j = (MainSystem.itH + 1) % 15;
+	
+// 		// if (MainSystem.itH < 14) j = MainSystem.itH + 1;
+// 		// else j = 0;
+
+// 		while (!MainSystem.Htask[j].vivo) {
+// 			j = (j + 1) % 15;
+// 			//if (j > 14) j = 0;
+// 		}
+			
+
+// 		MainSystem.jugadorActual = H;
+// 		relojH(j);
+// 		MainSystem.itH = j;
+// 		MainSystem.taskActual = &(MainSystem.Htask[j]);
+// 		return MainSystem.taskActual->gdtEntry;
+// 	}
+
+// 	tipoTarea typeSigSig = siguienteTarea(MainSystem.taskActual->type);
+
+// 	if(tieneVivos(typeSigSig)){
+// 		if (typeSigSig != H){
+// 			int i;
+// 			int k;
+// 			if (typeSigSig == A) k = 0; //[jugadorA, jugadorB]
+// 			else k = 1;
+
+// 			i = (TAREAS_JUG_SIGUIENTE.tareaActual + 1) % 5;
+
+// 			while (!TAREAS_JUG_SIGUIENTE.task[i].vivo){
+// 					i = (i + 1) % 5;
+// 			}
+
+// 			relojJug(k, i);
+// 			MainSystem.jugadorActual = typeSigSig;
+// 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
+// 			MainSystem.taskActual = &(TAREAS_JUG_SIGUIENTE.task[i]);
+// 			return MainSystem.taskActual->gdtEntry;
+// 		}
+
+// 		int j;
+// 		j = (MainSystem.itH + 1) % 15;
+
+// 		while (!MainSystem.Htask[j].vivo) {
+// 			j = (j + 1) % 15;
+// 		}
+			
+// 		MainSystem.jugadorActual = H;
+// 		relojH(j);
+// 		MainSystem.itH = j;
+// 		MainSystem.taskActual = &(MainSystem.Htask[j]);
+// 		return MainSystem.taskActual->gdtEntry;
+// 	}
+
+// 	tipoTarea actual = MainSystem.taskActual->type;
+
+// 	if(tieneVivos(actual)){
+// 		if (actual != H){
+// 			int i;
+// 			int k;
+// 			if (actual == A) k = 0; //[jugadorA, jugadorB]
+// 			else k = 1;
+
+// 			i = (TAREAS_JUG_SIGUIENTE.tareaActual + 1) % 5;
+
+// 			while (!TAREAS_JUG_SIGUIENTE.task[i].vivo){
+// 					i = (i + 1) % 5;
+// 			}
+
+// 			relojJug(k, i);
+// 			MainSystem.jugadorActual = actual;
+// 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
+// 			MainSystem.taskActual = &(TAREAS_JUG_SIGUIENTE.task[i]);
+// 			return MainSystem.taskActual->gdtEntry;
+// 		}
+
+// 		int j;
+// 		j = (MainSystem.itH + 1) % 15;
+
+// 		while (!MainSystem.Htask[j].vivo) {
+// 			j = (j + 1) % 15;
+// 		}
+			
+// 		MainSystem.jugadorActual = H;
+// 		relojH(j);
+// 		MainSystem.itH = j;
+// 		MainSystem.taskActual = &(MainSystem.Htask[j]);
+// 		return MainSystem.taskActual->gdtEntry;
+// 	}
+
+// 		return 0x50;
+// }

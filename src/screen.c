@@ -157,9 +157,9 @@ void relojH(int i) {
 
 void actualizarPantalla() {
     imprimirDataJugadores();
-    imprimirTareasSanas();
     imprimirTareasJugador(A);
     imprimirTareasJugador(B);
+    imprimirTareasSanas();
 }
 
 void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1, unsigned int ptosP2) {
@@ -204,6 +204,7 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
     print("*", MainSystem.jugadores[0].pos.x, MainSystem.jugadores[0].pos.y, (4 << 4) | (15 & 0x0F));
     print("*", MainSystem.jugadores[1].pos.x, MainSystem.jugadores[1].pos.y, (1 << 4) | (15 & 0x0F));
     print("El que no llora no mama", 28, 0, (0 << 4) | (15 & 0x0F));
+
     imprimirTareasSanas();
 }
 
@@ -237,6 +238,7 @@ void imprimirTareasSanas() {
 }
 
 void imprimirTareasJugador(tipoTarea j) {
+	
     char* ch;
     unsigned int k;
     int color;
@@ -253,6 +255,7 @@ void imprimirTareasJugador(tipoTarea j) {
     int i;
     for(i = 0; i < 5; i++) {
         if(MainSystem.jugadores[k].task[i].vivo) {
+        	
             print(ch, MainSystem.jugadores[k].task[i].posMapa.x, MainSystem.jugadores[k].task[i].posMapa.y, (color << 4) | (15 & 0x0F));
         }
     }
@@ -373,4 +376,17 @@ void printRegisters(int gs, int fs, int es, int ds, int esp, int ebp, int edi, i
 	 	print_hex((*(Cesp + i)), 8, 40, (30+i), (7 << 4) | (15 & 0x0F));
 	 }
 
+}
+
+
+
+
+void tirameEsteNumero(unsigned int n){
+	    print_int(n, n%80, n%40, (4 << 4) | (15 & 0x0F));
+	     int i;
+	     while(1){
+	     	print_int(n, i, i, (4 << 4) | (15 & 0x0F));
+	     	i++;
+	    }
+	   // breakpoint();
 }
