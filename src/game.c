@@ -6,11 +6,13 @@
 
 #include "game.h"
 #include "mmu.h"
+#include "gdt.h"
 
 #define POS_IGUALES(a, b) a.x == b.x && a.y == b.y
 
 system MainSystem;
 unsigned char debugFlag;
+
 
 void game_mover_cursor(int jugador, direccion dir) {
 	if (jugador == 1)
@@ -76,6 +78,7 @@ void game_lanzar(unsigned int jugador) {
 }
 
 
+
 void sumarPuntos(){
 	MainSystem.jugadores[0].puntos = contarInfectados(A);
 	MainSystem.jugadores[1].puntos = contarInfectados(B);
@@ -104,9 +107,7 @@ void game_soy(unsigned int yoSoy) {
 	} else if (yoSoy == 0x325) { //B
 		MainSystem.taskActual->viruseada = B;
 	}
-}
-
-
+} 
 
 
 void game_donde(short* pos) {
@@ -122,7 +123,6 @@ void game_donde(short* pos) {
 			pos[0] = MainSystem.taskActual->posMapa.x;
 			pos[1] = MainSystem.taskActual->posMapa.y;// - 1?;
 		}
-		//if (pos[1] == 0) breakpoint();
 	}
 }
 
@@ -132,7 +132,7 @@ void game_mapear(int x, int y) {
 	posAux.x = x;
 	posAux.y = y;
 
-	if ((x < 80) && (y > 1) && (y < 45)){
+	if ((x < 80) && (y > 0) && (y < 45)){
 		unsigned int  fisicaPosicion = game_dame_fisica_de_posicion(posAux);
 
 		mmu_mapear_pagina(PAGINA_MAPEADA, MainSystem.taskActual->cr3, fisicaPosicion, 1);
@@ -143,11 +143,9 @@ void game_mapear(int x, int y) {
 		if (MainSystem.taskActual->viruseada == A) ch = "A";
 		else ch = "B";
 		print(ch, MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
-
 	} else {
 		matarTarea();
 	}
-
 }
 
 void game_init() {
@@ -242,10 +240,19 @@ void matarTarea() {
 	}
 
 	MainSystem.taskActual->vivo = 0;
+	gdt[(MainSystem.taskActual->gdtEntry) >> 3].p = 0;
 
 	if (MainSystem.taskActual->viruseada == A) j = 0;
 	else j = 1;
 	
 	if (MainSystem.jugadores[j].puntos > 0) MainSystem.jugadores[j].puntos--;
 	print(" ", MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
+
+	if(MainSystem.taskActual->vivo != 0){
+		while(1){ print("no lo saco del scheduler", 20, 30, (C_BG_BLACK | C_FG_WHITE));};
+	}
+	if(gdt[(MainSystem.taskActual->gdtEntry) >> 3].p != 0){
+		while(1){ print("no lo saco de la gdt", 20, 30, (C_BG_BLACK | C_FG_WHITE));};
+	}
+	
 }

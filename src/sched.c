@@ -14,35 +14,30 @@ tipoTarea siguienteTarea(tipoTarea actual) {
 		case A:
 			if (MainSystem.jugadores[1].cantidadVivas > 0) return B;
 			else return H;
+		case B:
+			return H;
 		case H:
 			if (MainSystem.jugadores[0].cantidadVivas > 0) return A;
 			else return B;
-		case B:
-			return H;
 	}
 	return 0;
 }
 
- 
 unsigned short sched_proximo_indice() {
 	#define TAREAS_JUG_SIGUIENTE MainSystem.jugadores[k]
 	
 	tipoTarea typeSiguiente = siguienteTarea(MainSystem.taskActual->type);
+
 	if (typeSiguiente != H) {
 		int i;
-		int k;
-		if (typeSiguiente == A) k = 0;
-		else k = 1;
+		int k = (typeSiguiente != A);
 
-		if (TAREAS_JUG_SIGUIENTE.tareaActual < 4) i = TAREAS_JUG_SIGUIENTE.tareaActual + 1;
-		else i = 0;
-
+		i = (TAREAS_JUG_SIGUIENTE.tareaActual + 1) % 5;
 		while (i != TAREAS_JUG_SIGUIENTE.tareaActual && !TAREAS_JUG_SIGUIENTE.task[i].vivo){
-			i++;
-			if (i > 4) i = 0;
+			i = (i + 1) % 5;
 		}
 		
-		if (i != TAREAS_JUG_SIGUIENTE.tareaActual || TAREAS_JUG_SIGUIENTE.task[i].vivo) {
+		if (i != TAREAS_JUG_SIGUIENTE.tareaActual || TAREAS_JUG_SIGUIENTE.task[i].vivo) { // el negado de esto es q no hay ninguno vivo
 			relojJug(k, i);
 			MainSystem.jugadorActual = typeSiguiente;
 			TAREAS_JUG_SIGUIENTE.tareaActual = i;
@@ -51,15 +46,12 @@ unsigned short sched_proximo_indice() {
 			return MainSystem.taskActual->gdtEntry;
 		}
 	}
-	
+	/* 		Si la siguiente es H o no hay A o B vivas 	*/
 	int j;
-	if (MainSystem.itH < 14) j = MainSystem.itH + 1;
-	else j = 0;
+	j = (MainSystem.itH + 1) % 15;
 
-	while (j != MainSystem.itH && !MainSystem.Htask[j].vivo) {
-		j++;
-		if (j > 14) j = 0;
-	}
+	while (j != MainSystem.itH && !MainSystem.Htask[j].vivo) j = (j + 1) % 15;
+
 	if (j != MainSystem.itH || MainSystem.Htask[j].vivo) {
 		MainSystem.jugadorActual = H;
 		relojH(j);
