@@ -19,9 +19,8 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
 
     tss* tss_nueva = (tss*) mmu_proxima_pagina_fisica_libre();
     unsigned int i = tarea_gdt_libre();
-    //print_hex((unsigned int) tss_nueva,8,10,0,C_FG_WHITE);
-// hasta aca esta todo super
-    unsigned int nuevaCR3 = mmu_inicializar_dir_tarea(code, pos); // aca se rompe
+
+    unsigned int nuevaCR3 = mmu_inicializar_dir_tarea(code, pos);
     tss_nueva->esp0 = mmu_proxima_pagina_fisica_libre() + PAGE_SIZE;    //Prox pagina fisica libre
     tss_nueva->ss0 = GDT_POSICION_DATA_KERNEL;  
     tss_nueva->cr3 = nuevaCR3;
@@ -35,7 +34,6 @@ void tss_nueva_tarea(unsigned int* code, posicion pos, unsigned short* gdtEntry,
     tss_nueva->ds = (GDT_POSICION_DATA_USER | 0x3);
     tss_nueva->fs = (GDT_POSICION_DATA_USER | 0x3);
     tss_nueva->gs = (GDT_POSICION_DATA_USER | 0x3);
-    //tss_nueva->iomap = 0xFFFF;
 
     *gdtEntry = (unsigned short) i << 3;
     *cr3 = (unsigned int) nuevaCR3;

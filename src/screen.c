@@ -211,8 +211,16 @@ void imprimirJuego(unsigned int vidaP1, unsigned int vidaP2, unsigned int ptosP1
 
 void imprimirDataJugadores() {
     sumarPuntos();
+
+    print("  ", 43, 48, (0 << 4) | (15 & 0x0F));
+    printear("  ", 66, 48, (0 << 4) | (15 & 0x0F));
+
     print_int(MainSystem.jugadores[0].vida, 43, 48, (0 << 4) | (15 & 0x0F));
     print_int(MainSystem.jugadores[1].vida, 66, 48, (0 << 4) | (15 & 0x0F));
+
+
+    print("", 51, 47, (4 << 4) | (15 & 0x0F));
+    print("", 58, 47, (1 << 4) | (15 & 0x0F));
 
     print_int(MainSystem.jugadores[0].puntos, 51, 47, (4 << 4) | (15 & 0x0F));
     print_int(MainSystem.jugadores[1].puntos, 58, 47, (1 << 4) | (15 & 0x0F));

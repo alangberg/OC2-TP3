@@ -31,7 +31,7 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_COUNT 50 //REVISAR AL FINAL 
+#define GDT_COUNT 100 //REVISAR AL FINAL 
 
 #define GDT_IDX_NULL_KERNEL          0
 #define GDT_IDX_NULL_DESC1           1

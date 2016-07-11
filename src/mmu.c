@@ -80,7 +80,7 @@ unsigned int mmu_inicializar_dir_tarea(unsigned int* codigo, posicion pos) {
 
 
 unsigned int game_dame_fisica_de_posicion(posicion pos) {
-	return (0x400000 + (pos.y*80 + pos.x)*0x1000); //NICO LO CAMBIE QUE ONDA
+	return (0x400000 + (pos.y*80 + pos.x)*0x1000);
 }
 
 unsigned int proxima_pagina_libre;

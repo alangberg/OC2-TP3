@@ -237,6 +237,8 @@ void matarTarea() {
 		relojJug(MainSystem.taskActual->type, MainSystem.taskActual->posEnArreglo);
 
 		MainSystem.jugadores[j].cantidadVivas--;
+		MainSystem.jugadores[j].puntos--;
+
 	}
 
 	MainSystem.taskActual->vivo = 0;
@@ -247,12 +249,7 @@ void matarTarea() {
 	
 	if (MainSystem.jugadores[j].puntos > 0) MainSystem.jugadores[j].puntos--;
 	print(" ", MainSystem.taskActual->pos.x, MainSystem.taskActual->pos.y, (7 << 4));
-
-	if(MainSystem.taskActual->vivo != 0){
-		while(1){ print("no lo saco del scheduler", 20, 30, (C_BG_BLACK | C_FG_WHITE));};
-	}
-	if(gdt[(MainSystem.taskActual->gdtEntry) >> 3].p != 0){
-		while(1){ print("no lo saco de la gdt", 20, 30, (C_BG_BLACK | C_FG_WHITE));};
-	}
+	actualizarPantalla();
+	
 	
 }
